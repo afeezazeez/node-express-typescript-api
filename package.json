@@ -27,7 +27,8 @@
     "express": "^4.19.2",
     "mysql2": "^3.11.0",
     "sequelize": "^6.37.3",
-    "sequelize-typescript": "^2.1.6"
+    "sequelize-typescript": "^2.1.6",
+    "winston": "^3.14.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
