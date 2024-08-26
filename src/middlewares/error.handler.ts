@@ -18,7 +18,7 @@ function errorHandler(err: any, req: Request, res: Response, next: NextFunction)
         return sendErrorResponse(res, null, err.message, err.statusCode);
     }
 
-    Logger.error('Internal Server Error', { error: err });
+    Logger.error(err);
 
     return sendErrorResponse(res, null, 'Internal Server Error', 500);
 }

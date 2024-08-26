@@ -4,6 +4,7 @@ import cors from 'cors';
 import ErrorHandler from "./middlewares/error.handler";
 
 
+
 const app:Application = express();
 
 // Middleware
