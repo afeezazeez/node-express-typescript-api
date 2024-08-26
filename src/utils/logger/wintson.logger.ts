@@ -1,8 +1,9 @@
 import { transports, Logger, createLogger, LoggerOptions, format } from 'winston';
 const { combine, timestamp, label, prettyPrint } = format;
 import { join } from 'path';
+import {ILogger} from "./logger.interface";
 
-export class WinstonLogger {
+export class WinstonLogger  implements ILogger{
     private readonly logConfig: LoggerOptions;
     public logger: Logger;
 

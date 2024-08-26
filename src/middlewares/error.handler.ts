@@ -3,7 +3,7 @@ import { sendErrorResponse } from '../utils/http-response/response-handlers';
 import ClientErrorException from '../exceptions/client.error.exception';
 import ValidationErrorException from '../exceptions/validation.exception';
 import AuthenticationException from '../exceptions/authentication.exception';
-import Logger from '../utils/logger/logger';
+import Logger from '../utils/logger/wintson.logger';
 
 function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
     if (err instanceof ClientErrorException) {
