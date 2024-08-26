@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-class BcryptService {
+export class BcryptService {
     private readonly saltRounds: number;
 
     constructor(saltRounds: number = 10) {
@@ -26,4 +26,4 @@ class BcryptService {
     }
 }
 
-export default BcryptService;
+

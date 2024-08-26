@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import ValidationException from "../exceptions/validation.exception";
+import {ValidationException} from "../exceptions/validation.exception";
 
 export function validateBody<T>(dtoClass: new () => T) {
     return async (req: Request, res: Response, next: NextFunction) => {

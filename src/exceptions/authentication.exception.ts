@@ -1,4 +1,4 @@
-class AuthenticationException extends Error {
+export class AuthenticationException extends Error {
     public statusCode: number;
     constructor(message:string = 'Authentication failed', statusCode:number = 401) {
         super(message);
@@ -6,4 +6,3 @@ class AuthenticationException extends Error {
     }
 }
 
-export default AuthenticationException;

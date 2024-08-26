@@ -1,4 +1,4 @@
-class ValidationException extends Error {
+export class ValidationException extends Error {
     public statusCode: number;
     public errors: any[];
 
@@ -9,4 +9,3 @@ class ValidationException extends Error {
     }
 }
 
-export default ValidationException;
