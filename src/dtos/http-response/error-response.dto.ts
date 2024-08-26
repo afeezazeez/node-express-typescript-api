@@ -1,11 +1,11 @@
 export class ErrorResponseDto<T = any> {
     success: boolean;
     message?: string;
-    error?: T;
+    errors?: T;
 
-    constructor(message: string | null = null, error?: T) {
+    constructor(message: string | null = null, errors?: T) {
         this.success = false;
         if (message) this.message = message;
-        if (error) this.error = error;
+        if (errors) this.errors = errors;
     }
 }

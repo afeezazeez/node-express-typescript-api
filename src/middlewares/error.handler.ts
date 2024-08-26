@@ -11,7 +11,7 @@ function errorHandler(err: any, req: Request, res: Response, next: NextFunction)
     }
 
     if (err instanceof ValidationErrorException) {
-        return sendErrorResponse(res, err.errors, err.errors[0].message, err.statusCode);
+        return sendErrorResponse(res, err.errors, err.message, err.statusCode);
     }
 
     if (err instanceof AuthenticationException) {
