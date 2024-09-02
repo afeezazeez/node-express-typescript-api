@@ -9,6 +9,7 @@ import {WinstonLogger} from "../utils/logger/wintson.logger";
 import {BcryptService} from "../utils/bycrypt/bycrypt.service";
 import {EmailService} from "../services/email/email.service";
 import {RedisService} from "../utils/redis/redis.service";
+import {ResendEmailRequestDto} from "../dtos/auth/resend-email-request.dto";
 
 
 const  router =  Router();
@@ -26,5 +27,6 @@ const authController:AuthController = new AuthController(authService)
 
 router.post('/auth/register', validateBody(RegisterRequestDto), authController.register);
 router.post('/auth/email/verify', validateBody(VerifyEmailRequestDto), authController.verifyEmail);
+router.post('/auth/email/resend', validateBody(ResendEmailRequestDto), authController.resendEmail);
 
 export default router;

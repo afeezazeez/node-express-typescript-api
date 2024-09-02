@@ -17,6 +17,7 @@ import {RedisService} from "../../utils/redis/redis.service";
 import {VerifyEmailRequestDto} from "../../dtos/auth/verify-email-request.dto";
 import {ResponseStatus} from "../../enums/http-status-codes";
 import UserDto from "../../dtos/user/user.dto";
+import {ResendEmailRequestDto} from "../../dtos/auth/resend-email-request.dto";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -128,5 +129,32 @@ export class AuthService {
         }
 
     }
+
+
+    /**
+     * Resend user email
+     * @param data {ResendEmailRequestDto}
+     * @returns {Promise<boolean>}
+     */
+    async resendEmail(data:ResendEmailRequestDto): Promise<boolean>{
+
+        const user = await this.userRepository.getByEmail(data.email)
+
+        if (!user){
+            throw new ClientErrorException("User not found",ResponseStatus.BAD_REQUEST)
+        }
+
+        try {
+            await this.sendVerificationEmail(UserDto.make(user));
+            return true;
+        } catch (e) {
+            this.logger.error(`[AuthService Error] Resending Email verification failed with error: ${e}`);
+            throw new ClientErrorException("Failed to resend email.");
+        }
+
+    }
+
+
+
 
 }

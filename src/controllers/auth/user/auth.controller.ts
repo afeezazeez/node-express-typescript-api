@@ -3,6 +3,7 @@ import {RegisterRequestDto} from "../../../dtos/auth/register-request.dto";
 import {sendSuccessResponse} from "../../../utils/http-response/response-handlers";
 import {AuthService} from "../../../services/auth/auth.service";
 import {VerifyEmailRequestDto} from "../../../dtos/auth/verify-email-request.dto";
+import {ResendEmailRequestDto} from "../../../dtos/auth/resend-email-request.dto";
 
 export class AuthController {
 
@@ -33,7 +34,7 @@ export class AuthController {
     }
 
     /**
-     * Register New User
+     * Verify user email
      * @param req {Request}
      * @param res (Response
      * @param next {NextFunction}
@@ -47,5 +48,23 @@ export class AuthController {
             next(e);
         }
     }
+
+    /**
+     * Resend verification email
+     * @param req {Request}
+     * @param res (Response
+     * @param next {NextFunction}
+     * @returns {Response}
+     */
+    resendEmail = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await this.authService.resendEmail(req.body as ResendEmailRequestDto);
+            return sendSuccessResponse(res,null,'Email verification resent successful.',200)
+        } catch (e) {
+            next(e);
+        }
+    }
+
+
 
 }
