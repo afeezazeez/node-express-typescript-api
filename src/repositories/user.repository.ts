@@ -1,51 +1,46 @@
 import {User} from "../database/models/User";
-import {IUser} from "../interfaces/user/user.interface";
 import {FindOptions} from 'sequelize';
-
+import {IUser} from "../interfaces/user/user.interface";
 
 
 export class UserRepository {
 
-    async create(user:any): Promise<IUser> {
+    async create(user:any): Promise<User> {
         try {
-            const newUser = await User.create(user);
-            return newUser as IUser
+            return await User.create(user);
         } catch (error) {
             throw error
         }
     }
 
-    async getById(id: number): Promise<IUser | null> {
+    async getById(id: string): Promise<User | null> {
         try {
-            const options: FindOptions = {where: { id:id, deleted_at: null }};
-            const user = await User.findOne(options);
-            return user as IUser | null;
+            const options: FindOptions = {where: { id:id}};
+           return  await User.findOne(options);
         } catch (error) {
             throw error
         }
     }
 
-    async getByEmail(email: string): Promise<IUser | null> {
+    async getByEmail(email: string): Promise<User | null> {
         try {
-            const options: FindOptions = {where: { email:email, deleted_at: null }};
-            const user = await User.findOne(options);
-            return user as IUser | null;
+            const options: FindOptions = {where: { email }};
+            return await User.findOne(options) ;
         } catch (error) {
             throw error
         }
     }
 
-    async getByDisplayName(displayName: string): Promise<IUser | null> {
+    async getByDisplayName(displayName: string): Promise<User | null> {
         try {
-            const options: FindOptions = {where: { display_name:displayName, deleted_at: null }};
-            const user = await User.findOne(options);
-            return user as IUser | null;
+            const options: FindOptions = {where: { display_name:displayName }};
+            return  await User.findOne(options);
         } catch (error) {
             throw error
         }
     }
 
-    async update(userData: IUser, id: number): Promise<[affectedCount: number]> {
+    async update(userData:any, id: string): Promise<[affectedCount: number]> {
         try {
             return await User.update(userData, {where: {id}})
 
@@ -54,7 +49,7 @@ export class UserRepository {
         }
     }
 
-    async delete(id: number): Promise<void> {
+    async delete(id: string): Promise<void> {
         try {
             await User.destroy({where: {id: id,}});
         } catch (error) {

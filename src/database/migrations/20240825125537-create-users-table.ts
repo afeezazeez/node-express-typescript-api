@@ -14,10 +14,6 @@ export default {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -34,6 +30,10 @@ export default {
       },
       avatar: {
         type: DataTypes.STRING,
+        allowNull: true,
+      },
+      email_verified_at: {
+        type: DataTypes.DATE,
         allowNull: true,
       },
       created_at: {

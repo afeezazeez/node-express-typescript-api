@@ -10,7 +10,6 @@ export default {
     const users = await Promise.all(
         Array.from({ length: 20 }).map(async () => ({
           id: faker.string.uuid(), // Generate a new UUID for each user
-          name: faker.person.fullName(),
           display_name:faker.person.lastName(),
           email: faker.internet.email(),
           password: await bcryptService.make(faker.internet.password()), // Await password hashing
@@ -18,6 +17,7 @@ export default {
           created_at: new Date(),
           updated_at: new Date(),
           deleted_at: null,
+          email_verified_at:null
         }))
     );
 

@@ -1,6 +1,6 @@
 import { transports, Logger, createLogger, LoggerOptions, format } from 'winston';
 const { combine, timestamp, label, prettyPrint } = format;
-import ConfigService from "../config/config.service";
+import configService from "../config/config.service";
 import {ILogger} from "./logger.interface";
 
 export class WinstonLogger  implements ILogger{
@@ -8,7 +8,7 @@ export class WinstonLogger  implements ILogger{
     public logger: Logger;
 
     constructor(scope: string) {
-        const filePath = ConfigService.get<string>('LOG_FILE_PATH');
+        const filePath = configService.get<string>('LOG_FILE_PATH');
         this.logConfig = {
             transports: [
                 new transports.Console(),

@@ -1,0 +1,9 @@
+export enum ResponseStatus  {
+    CREATED=201,
+    NOT_FOUND= 404,
+    BAD_REQUEST=400,
+    UNAUTHORISED=401,
+    UNPROCCESSIBLE= 422,
+    INTERNAL_SERVER = 500
+
+};

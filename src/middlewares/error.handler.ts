@@ -4,6 +4,7 @@ import {ClientErrorException} from '../exceptions/client.error.exception';
 import {ValidationException} from '../exceptions/validation.exception';
 import {AuthenticationException} from '../exceptions/authentication.exception';
 import Logger from '../utils/logger/wintson.logger';
+import {ResponseStatus} from "../enums/http-status-codes";
 
 function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
     if (err instanceof ClientErrorException) {
@@ -20,7 +21,7 @@ function errorHandler(err: any, req: Request, res: Response, next: NextFunction)
 
     Logger.error(err);
 
-    return sendErrorResponse(res, null, 'Internal Server Error', 500);
+    return sendErrorResponse(res, null, 'Internal Server Error', ResponseStatus.INTERNAL_SERVER);
 }
 
 export default errorHandler;

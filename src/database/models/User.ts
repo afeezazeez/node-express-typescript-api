@@ -5,8 +5,9 @@ import { Table, Column, Model, DataType, DefaultScope } from 'sequelize-typescri
 }))
 @Table({
     tableName: 'users',
-    timestamps: true,
     paranoid: true,
+    timestamps: true,
+    underscored: true
 })
 export class User extends Model<User> {
 
@@ -20,12 +21,6 @@ export class User extends Model<User> {
     @Column({
         type: DataType.STRING,
         allowNull: false,
-    })
-    name!: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
         unique: true,
     })
     email!: string;
@@ -35,7 +30,7 @@ export class User extends Model<User> {
         allowNull: false,
         unique: true,
     })
-    display_name!: string;
+    displayName!: string;
 
     @Column({
         type: DataType.STRING,
@@ -50,23 +45,8 @@ export class User extends Model<User> {
     avatar!: string;
 
     @Column({
-        field: 'deleted_at',
         type: DataType.DATE,
         allowNull: true,
     })
-    deleted_at!: Date;
-
-    @Column({
-        field: 'created_at',
-        type: DataType.DATE,
-        allowNull: false,
-    })
-    created_at!: Date;
-
-    @Column({
-        field: 'updated_at',
-        type: DataType.DATE,
-        allowNull: false,
-    })
-    updated_at!: Date;
+    email_verified_at!: string;
 }
