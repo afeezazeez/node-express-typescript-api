@@ -1,14 +1,13 @@
-import { IsDefined, IsEmail, IsString } from 'class-validator';
+import {IsEmail, IsNotEmpty} from 'class-validator';
 
 export class LoginRequestDto {
 
 
-    @IsDefined({ message: 'Email is required.' })
+    @IsNotEmpty({ message: 'Email is required.' })
     @IsEmail({}, { message: 'Invalid email address.' })
     email!: string;
 
-    @IsDefined({ message: 'Password is required.' })
-    @IsString({ message: 'Password must be a string.' })
+    @IsNotEmpty({ message: 'Password is required.' })
     password!: string;
 }
 

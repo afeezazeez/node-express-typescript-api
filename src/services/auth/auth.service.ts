@@ -22,6 +22,8 @@ import {LoginRequestDto} from "../../dtos/auth/login.request.dto";
 import {JwtService} from "../../utils/jwt/jwt.service";
 import {LoginResponseDto} from "../../dtos/auth/login.response.dto";
 import {RequestPasswordLinkDto} from "../../dtos/auth/request-password-request.dto";
+import {ResetPasswordRequestDto} from "../../dtos/auth/reset-password-request.dto";
+import {th, tr} from "@faker-js/faker";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -205,6 +207,59 @@ export class AuthService {
         }
 
     }
+
+    /**
+     * Reset  password
+     * @param data {RequestPasswordLinkDto}
+     * @returns {Promise<boolean>}
+     */
+    async resetPassword(data:ResetPasswordRequestDto): Promise<boolean>{
+
+        const email = await this.redisService.get(`${Tokens.PASSWORD_RESET_REDIS_KEY}:${data.token}`)
+
+        if (!email){
+            throw new ClientErrorException("Password reset link is invalid or has expired")
+        }
+
+        if (data.new_password !== data.confirm_new_password){
+            throw new ClientErrorException("Passwords do not  match")
+        }
+
+        const user = await this.userRepository.getByEmail(email)
+
+        if (!user){
+            throw new ClientErrorException('Please request new link')
+        }
+
+        const  isOldPasswordCorrect = await this.bcryptService.check(data.old_password,user.password);
+
+        if (!isOldPasswordCorrect){
+            throw new ClientErrorException('Old password is incorrect');
+        }
+
+        const  isNewPasswordCurrent = await this.bcryptService.check(data.new_password,user.password);
+
+        if (isNewPasswordCurrent){
+            throw new ClientErrorException('Please set a new password different from old password');
+        }
+
+
+        try {
+            const new_password = await this.bcryptService.make(data.new_password);
+            const response = await this.userRepository.update({password:new_password},user.id)
+            if (response){
+                await this.redisService.del(`${Tokens.PASSWORD_RESET_REDIS_KEY}:${data.token}`)
+            }
+            return true;
+        } catch (e) {
+            this.logger.error(`[AuthService Error] Password reset failed with error: ${e}`);
+            throw new ClientErrorException("Failed to reset password.");
+        }
+
+    }
+
+
+
 
 
 

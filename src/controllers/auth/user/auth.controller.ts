@@ -7,6 +7,7 @@ import {ResendEmailRequestDto} from "../../../dtos/auth/resend-email-request.dto
 import {LoginRequestDto} from "../../../dtos/auth/login.request.dto";
 import {ResponseStatus} from "../../../enums/http-status-codes";
 import {RequestPasswordLinkDto} from "../../../dtos/auth/request-password-request.dto";
+import {ResetPasswordRequestDto} from "../../../dtos/auth/reset-password-request.dto";
 
 export class AuthController {
 
@@ -23,7 +24,7 @@ export class AuthController {
     /**
      * Register New User
      * @param req {Request}
-     * @param res (Response
+     * @param res {Response}
      * @param next {NextFunction}
      * @returns {Response}
      */
@@ -40,7 +41,7 @@ export class AuthController {
     /**
      * Login User
      * @param req {Request}
-     * @param res (Response
+     * @param res {Response}
      * @param next {NextFunction}
      * @returns {Response}
      */
@@ -56,7 +57,7 @@ export class AuthController {
     /**
      * Verify user email
      * @param req {Request}
-     * @param res (Response
+     * @param res {Response}
      * @param next {NextFunction}
      * @returns {Response}
      */
@@ -72,7 +73,7 @@ export class AuthController {
     /**
      * Resend verification email
      * @param req {Request}
-     * @param res (Response
+     * @param res {Response}
      * @param next {NextFunction}
      * @returns {Response}
      */
@@ -88,7 +89,7 @@ export class AuthController {
     /**
      * Request password reset link
      * @param req {Request}
-     * @param res (Response
+     * @param res {Response}
      * @param next {NextFunction}
      * @returns {Response}
      */
@@ -100,6 +101,24 @@ export class AuthController {
             next(e);
         }
     }
+
+    /**
+     * Reset password
+     * @param req {Request}
+     * @param res {Response}
+     * @param next {NextFunction}
+     * @returns {Response}
+     */
+    resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await this.authService.resetPassword(req.body as ResetPasswordRequestDto);
+            return sendSuccessResponse(res,null,'Password was reset successfully.',ResponseStatus.OK)
+        } catch (e) {
+            next(e);
+        }
+    }
+
+
 
 
 

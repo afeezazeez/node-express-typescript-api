@@ -1,15 +1,15 @@
-import { IsDefined, IsEmail, IsString } from 'class-validator';
+import {IsEmail, IsNotEmpty, MaxLength, MinLength} from 'class-validator';
 
 export class RegisterRequestDto {
-    @IsDefined({ message: 'Display name is required.' })
-    @IsString({ message: 'Display name must be a string.' })
+    @IsNotEmpty({ message: 'Display name is required.' })
     displayName!: string;
 
-    @IsDefined({ message: 'Email is required.' })
+    @IsNotEmpty({ message: 'Email is required.' })
     @IsEmail({}, { message: 'Invalid email address.' })
     email!: string;
 
-    @IsDefined({ message: 'Password is required.' })
-    @IsString({ message: 'Password must be a string.' })
+    @MinLength(6, { message: 'New password must be at least 6 characters long.' })
+    @MaxLength(12, { message: 'New password must not exceed 12 characters.' })
+    @IsNotEmpty({ message: 'Password is required.' })
     password!: string;
 }
