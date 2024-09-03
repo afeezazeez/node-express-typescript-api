@@ -107,6 +107,10 @@ export class AuthService {
             throw new ClientErrorException('Password is incorrect');
         }
 
+        if (!user.email_verified_at){
+            throw new ClientErrorException('Email has not be verified. Please request link');
+        }
+
         try {
             const payload = {email:user.email}
             const token = this.jwtService.signPayload(payload);
