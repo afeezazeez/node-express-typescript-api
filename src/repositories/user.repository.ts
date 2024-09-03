@@ -1,6 +1,6 @@
 import {User} from "../database/models/User";
 import {FindOptions} from 'sequelize';
-import {IUser} from "../interfaces/user/user.interface";
+
 
 
 export class UserRepository {

@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import {ClientErrorException} from "../../exceptions/client.error.exception";
 
 export class BcryptService {
     private readonly saltRounds: number;
@@ -12,7 +13,7 @@ export class BcryptService {
         try {
             return await bcrypt.hash(password, this.saltRounds);
         } catch (error) {
-            throw new Error('Error hashing password');
+            throw new ClientErrorException('[BcryptService] Error hashing password');
         }
     }
 
@@ -21,7 +22,8 @@ export class BcryptService {
         try {
             return await bcrypt.compare(password, hashedPassword);
         } catch (error) {
-            throw new Error('Error checking password');
+            console.log(error)
+            throw new ClientErrorException('[BcryptService] Error checking password');
         }
     }
 }

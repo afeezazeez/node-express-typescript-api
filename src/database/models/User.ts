@@ -1,8 +1,6 @@
-import { Table, Column, Model, DataType, DefaultScope } from 'sequelize-typescript';
+import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-@DefaultScope(() => ({
-    attributes: { exclude: ['password'] }
-}))
+
 @Table({
     tableName: 'users',
     paranoid: true,

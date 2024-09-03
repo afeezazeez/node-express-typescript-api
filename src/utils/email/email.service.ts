@@ -1,9 +1,9 @@
 import nodemailer, { Transporter,SendMailOptions } from 'nodemailer';
-import configService from "../../utils/config/config.service";
+import configService from "../config/config.service";
 import { IEmailService } from "./email.service.interface";
 import * as path from 'path';
-import { ILogger } from "../../utils/logger/logger.interface";
-import { WinstonLogger } from "../../utils/logger/wintson.logger";
+import { ILogger } from "../logger/logger.interface";
+import { WinstonLogger } from "../logger/wintson.logger";
 import ejs from 'ejs';
 import {SendMailArgs} from "../../interfaces/email/send.email";
 

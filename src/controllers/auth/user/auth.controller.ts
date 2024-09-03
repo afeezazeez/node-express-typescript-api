@@ -4,6 +4,8 @@ import {sendSuccessResponse} from "../../../utils/http-response/response-handler
 import {AuthService} from "../../../services/auth/auth.service";
 import {VerifyEmailRequestDto} from "../../../dtos/auth/verify-email-request.dto";
 import {ResendEmailRequestDto} from "../../../dtos/auth/resend-email-request.dto";
+import {LoginRequestDto} from "../../../dtos/auth/login.request.dto";
+import {ResponseStatus} from "../../../enums/http-status-codes";
 
 export class AuthController {
 
@@ -27,7 +29,24 @@ export class AuthController {
     register = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const response = await this.authService.register(req.body as RegisterRequestDto);
-            return sendSuccessResponse(res,response,'Registration successful. Please check your email',201)
+            return sendSuccessResponse(res,response,'Registration successful. Please check your email',ResponseStatus.CREATED)
+        } catch (e) {
+            next(e);
+        }
+    }
+
+
+    /**
+     * Login User
+     * @param req {Request}
+     * @param res (Response
+     * @param next {NextFunction}
+     * @returns {Response}
+     */
+    login = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const response = await this.authService.login(req.body as LoginRequestDto);
+            return sendSuccessResponse(res,response,'Login successful.',ResponseStatus.OK)
         } catch (e) {
             next(e);
         }

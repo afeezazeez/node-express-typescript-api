@@ -4,8 +4,8 @@ import {BcryptService} from "../../utils/bycrypt/bycrypt.service";
 import {ILogger} from "../../utils/logger/logger.interface";
 import {RegisterRequestDto} from "../../dtos/auth/register-request.dto";
 import {ClientErrorException} from "../../exceptions/client.error.exception";
-import {IEmailService} from "../email/email.service.interface";
-import {EmailService} from "../email/email.service";
+import {IEmailService} from "../../utils/email/email.service.interface";
+import {EmailService} from "../../utils/email/email.service";
 import {jobQueue} from "../../config/queue/queue.config";
 import {Jobs} from "../../enums/jobs.types";
 import {Tokens} from "../../enums/tokens";
@@ -18,6 +18,9 @@ import {VerifyEmailRequestDto} from "../../dtos/auth/verify-email-request.dto";
 import {ResponseStatus} from "../../enums/http-status-codes";
 import UserDto from "../../dtos/user/user.dto";
 import {ResendEmailRequestDto} from "../../dtos/auth/resend-email-request.dto";
+import {LoginRequestDto} from "../../dtos/auth/login.request.dto";
+import {JwtService} from "../../utils/jwt/jwt.service";
+import {LoginResponseDto} from "../../dtos/auth/login.response.dto";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -28,26 +31,32 @@ export class AuthService {
     private readonly bcryptService: BcryptService;
     private readonly emailService:IEmailService
     private readonly redisService:RedisService;
+    private readonly provider;
+    private readonly jwtService:JwtService
 
     constructor(
         userRepository: UserRepository,
         logger: WinstonLogger,
         bcryptService: BcryptService,
         emailService:EmailService,
-        redisService:RedisService
+        redisService:RedisService,
+        jwtService:JwtService,
+        provider:string,
     ) {
         this.userRepository = userRepository;
         this.logger = logger;
         this.bcryptService = bcryptService;
         this.emailService = emailService;
         this.redisService = redisService;
+        this.jwtService =jwtService
+        this.provider = provider
     }
 
 
     /**
      * Registers new user
      * @param data {RegisterRequestDto}
-     * @returns {boolean}
+     * @returns {LoginResponseDto}
      * @throws {ClientErrorException}
      */
     async register(data: RegisterRequestDto): Promise<boolean> {
@@ -74,6 +83,37 @@ export class AuthService {
         } catch (e) {
             this.logger.error(`[AuthService Error] Registration failed with error: ${e}`);
             throw new ClientErrorException("Registration failed.");
+        }
+    }
+
+    /**
+     * Login
+     * @param data {LoginRequestDto}
+     * @returns {void}
+     * @throws {ClientErrorException}
+     */
+    async login(data: LoginRequestDto): Promise<LoginResponseDto> {
+
+
+        const user = await this.userRepository.getByEmail(data.email);
+
+        if (!user) {
+            throw new ClientErrorException('Email is already associated with an account');
+        }
+
+        const  isPasswordCorrect = await this.bcryptService.check(data.password,user.password);
+
+        if (!isPasswordCorrect){
+            throw new ClientErrorException('Password is incorrect');
+        }
+
+        try {
+            const payload = {email:user.email}
+            const token = this.jwtService.signPayload(payload);
+            return new LoginResponseDto(token,user.displayName);
+        } catch (e) {
+            this.logger.error(`[AuthService Error] Login failed with error: ${e}`);
+            throw new ClientErrorException("Login failed.");
         }
     }
 
@@ -141,7 +181,11 @@ export class AuthService {
         const user = await this.userRepository.getByEmail(data.email)
 
         if (!user){
-            throw new ClientErrorException("User not found",ResponseStatus.BAD_REQUEST)
+            throw new ClientErrorException("Email is not associated with any account",ResponseStatus.BAD_REQUEST)
+        }
+
+        if(user.email_verified_at){
+            throw new ClientErrorException("Account is already verified",ResponseStatus.BAD_REQUEST)
         }
 
         try {

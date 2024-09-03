@@ -1,5 +1,5 @@
-import {EmailService} from "../../services/email/email.service";
-import {IEmailService} from "../../services/email/email.service.interface";
+import {EmailService} from "../email/email.service";
+import {IEmailService} from "../email/email.service.interface";
 
 export class JobHandlers {
     private readonly emailService:IEmailService;

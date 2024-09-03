@@ -4,6 +4,7 @@ export enum ResponseStatus  {
     BAD_REQUEST=400,
     UNAUTHORISED=401,
     UNPROCCESSIBLE= 422,
-    INTERNAL_SERVER = 500
+    INTERNAL_SERVER = 500,
+    OK=200,
 
 };

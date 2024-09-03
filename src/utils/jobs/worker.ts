@@ -3,7 +3,7 @@ import { Worker } from 'bullmq';
 import configService from '../../utils/config/config.service';
 import { JobHandlers } from './jobs.handler';
 import { JobTypes } from '../../enums/jobs.types';
-import { EmailService } from '../../services/email/email.service';
+import { EmailService } from '../email/email.service';
 import {WinstonLogger} from "../logger/wintson.logger";
 const emailService = new EmailService( new WinstonLogger('Worker'));
 const jobHandlers = new JobHandlers(emailService);
