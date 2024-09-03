@@ -2,13 +2,15 @@ import { transports, Logger, createLogger, LoggerOptions, format } from 'winston
 const { combine, timestamp, label, prettyPrint } = format;
 import configService from "../config/config.service";
 import {ILogger} from "./logger.interface";
+import * as fs from 'fs';
+
 
 export class WinstonLogger  implements ILogger{
     private readonly logConfig: LoggerOptions;
     public logger: Logger;
 
     constructor(scope: string) {
-        const filePath = configService.get<string>('LOG_FILE_PATH');
+        const filePath= configService.get<string>('LOG_FILE_PATH') ;
         this.logConfig = {
             transports: [
                 new transports.Console(),
@@ -35,6 +37,23 @@ export class WinstonLogger  implements ILogger{
 
     warn(message: string, meta?: object): void {
         this.logger.warn(message, meta);
+    }
+
+    message(message: string): void {
+
+        const logFilePath = configService.get('WORKER_LOG_FILE_PATH');
+
+        if (!logFilePath) {
+            return;
+        }
+
+        try {
+            const logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
+            logStream.write(message + '\n');
+            logStream.end();
+        } catch (error) {
+            console.error('Error writing to log file:', error);
+        }
     }
 }
 

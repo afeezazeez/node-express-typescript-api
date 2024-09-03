@@ -7,6 +7,7 @@
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
     "build": "tsc",
     "make:migration": "npx sequelize-cli migration:generate --name",
+    "queue:start": " npx ts-node src/utils/jobs/worker.ts",
     "migrate": "npx sequelize-cli db:migrate",
     "migrate:rollback": "npx sequelize-cli db:migrate:undo",
     "migrate:reset": "npx sequelize-cli db:migrate:undo:all",
