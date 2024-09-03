@@ -8,6 +8,7 @@ import {WinstonLogger} from "../logger/wintson.logger";
 const emailService = new EmailService( new WinstonLogger('Worker'));
 const jobHandlers = new JobHandlers(emailService);
 const logger = new WinstonLogger('Worker');
+import {jobQueue} from "../../config/queue/queue.config";
 
 
 const jobStartTimes = new Map<string, number>();
@@ -25,6 +26,10 @@ const worker = new Worker('jobQueue', async job => {
     }
 }, {
     connection: { host: configService.get('REDIS_HOST'), port: configService.get('REDIS_PORT') },
+    limiter: {
+        max: 5, // Maximum 5 jobs processed in parallel
+        duration: 1000, // In 1 second
+    }
 });
 
 worker.on('completed', job => {
@@ -36,9 +41,16 @@ worker.on('completed', job => {
 
 worker.on('failed', (job, err) => {
     const durationStr = getDurationString(job,true)
-    console.log(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
+    //console.log(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
     logger.error(`[Queue-Worker]Job  ${job?.name} failed with error ${err.message}`)
     logger.message(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
+
+    if (job && (job.attemptsMade === job.opts.attempts)) {
+        console.log(`[${formattedDate}] Job ${job?.name} has exhausted all retries.`);
+        logger.message(`[${formattedDate}] Job ${job?.name} has exhausted all retries.`);
+
+    }
+
 });
 
 

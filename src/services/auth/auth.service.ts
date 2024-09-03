@@ -312,7 +312,13 @@ export class AuthService {
         emailData.data.link = link;
         emailData.data.expiry = `${expiry} minutes`;
         //Push the job to the queue to send the verification email
-        await jobQueue.add(job_type,emailData);
+        await jobQueue.add(job_type,emailData,{
+            attempts:3,
+            backoff :{
+                type: 'fixed',
+                delay: 9000, // 5 seconds delay between retries
+            }
+        });
     }
 
 
