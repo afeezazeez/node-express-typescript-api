@@ -23,7 +23,6 @@ import {JwtService} from "../../utils/jwt/jwt.service";
 import {LoginResponseDto} from "../../dtos/auth/login.response.dto";
 import {RequestPasswordLinkDto} from "../../dtos/auth/request-password-request.dto";
 import {ResetPasswordRequestDto} from "../../dtos/auth/reset-password-request.dto";
-import {th, tr} from "@faker-js/faker";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -259,28 +258,19 @@ export class AuthService {
     }
 
 
-
-
-
-
     /**
      * Send email verification link
      * @param user {User}
      * @returns {Promise<void>}
      */
     async sendVerificationEmail(user:IUser ): Promise<void> {
-        const token = generateHash(user.email)
-        const expiry = Tokens.EMAIL_VERIFICATION_TOKEN_EXPIRY ;
-        await this.redisService.set(`${Tokens.EMAIL_VERIFICATION_REDIS_KEY}:${token}`, user.email,  expiry*60);
-        const link = `${configService.get('APP_FRONTEND_URL')}/auth/email/verify?token=${token}`;
         const sendMailArgs: SendMailArgs = {
             to: user.email,
             subject: 'Please Verify Your Email',
             view: 'emails/verification.ejs',
-            data: { name: user.displayName, link,expiry:`${expiry} minutes` }
+            data: { name: user.displayName }
         };
-        //Push the job to the queue to send the verification email
-        await jobQueue.add(Jobs.SEND_VERIFICATION_EMAIL,sendMailArgs);
+        await this.triggerEmail(user, sendMailArgs,'email-verify')
     }
 
     /**
@@ -289,19 +279,43 @@ export class AuthService {
      * @returns {Promise<void>}
      */
     async sendPasswordResetLink(user:IUser ): Promise<void> {
-        const token = generateHash(user.email)
-        const expiry = Tokens.PASSWORD_RESET_TOKEN_EXPIRY
-        await this.redisService.set(`${Tokens.PASSWORD_RESET_REDIS_KEY}:${token}`, user.email,  expiry*60);
-        const link = `${configService.get('APP_FRONTEND_URL')}/auth/password-reset/reset?token=${token}`;
+
         const sendMailArgs: SendMailArgs = {
             to: user.email,
             subject: 'Password Reset Link',
             view: 'emails/password-reset.ejs',
-            data: { name: user.displayName, link,expiry:`${expiry} minutes` }
+            data: { name: user.displayName }
         };
-        //Push the job to the queue to send the verification email
-        await jobQueue.add(Jobs.SEND_PASSWORD_RESET_EMAIL,sendMailArgs);
+        await this.triggerEmail(user, sendMailArgs,null)
     }
+
+
+    /**
+     * Send email
+     * @param user {User}
+     * @param emailData
+     * @param type
+     * @returns {Promise<void>}
+     */
+    async triggerEmail(user:IUser,emailData:SendMailArgs,type:string|null ): Promise<void> {
+
+        const token = generateHash(user.email)
+        const expiry =  type === 'email-verify' ? Tokens.EMAIL_VERIFICATION_TOKEN_EXPIRY : Tokens.PASSWORD_RESET_TOKEN_EXPIRY
+        const redisKey = type === 'email-verify' ? Tokens.EMAIL_VERIFICATION_REDIS_KEY : Tokens.PASSWORD_RESET_REDIS_KEY
+        const url =  type === 'email-verify' ? 'email/verify' : 'password-reset/reset'
+        const link = `${configService.get('APP_FRONTEND_URL')}/auth/${url}?token=${token}`;
+        const job_type = type === 'email-verify' ? Jobs.SEND_VERIFICATION_EMAIL : Jobs.SEND_PASSWORD_RESET_EMAIL
+
+
+        await this.redisService.set(`${redisKey}:${token}`, user.email,  expiry*60);
+        emailData.data = emailData.data || {};
+        emailData.data.link = link;
+        emailData.data.expiry = `${expiry} minutes`;
+        //Push the job to the queue to send the verification email
+        await jobQueue.add(job_type,emailData);
+    }
+
+
 
 
 }
