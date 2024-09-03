@@ -19,7 +19,8 @@ const worker = new Worker('jobQueue', async job => {
     logger.message(`[${formattedDate}] Job ${job.name} ................... RUNNING`);
     switch (job.name) {
         case Jobs.SEND_VERIFICATION_EMAIL:
-            await jobHandlers.handleSendVerificationEmail(job.data);
+        case Jobs.SEND_PASSWORD_RESET_EMAIL:
+            await jobHandlers.sendEmail(job.data);
             break;
     }
 }, {
@@ -49,9 +50,9 @@ function getDurationString(job:any,clear = false):string{
     // Convert duration to milliseconds, seconds, and minutes
     const durationMsStr = `${durationMs}ms`;
     const durationSec = Math.round(durationMs / 1000);
-    const durationSecStr = `${durationSec}secs`;
+    const durationSecStr = `${durationSec}s`;
     const durationMin = Math.round(durationSec / 60);
-    const durationMinStr = `${durationMin}mins`;
+    const durationMinStr = `${durationMin}m`;
 
     let durationStr: string;
     if (durationMs < 1000) {
@@ -61,7 +62,6 @@ function getDurationString(job:any,clear = false):string{
     } else {
         durationStr = durationMinStr;
     }
-    const res = durationStr;
     jobStartTimes.delete(job.id!);
-    return res;
+    return durationStr;
 }

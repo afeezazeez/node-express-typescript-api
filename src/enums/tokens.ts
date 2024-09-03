@@ -1,4 +1,6 @@
 export enum Tokens  {
-    EMAIL_VERIFICATION_TOKEN = 10,
-    EMAIL_VERIFICATION_REDIS_KEY= 'email_verification_token'
+    EMAIL_VERIFICATION_TOKEN_EXPIRY = 10,
+    EMAIL_VERIFICATION_REDIS_KEY= 'email_verification_token',
+    PASSWORD_RESET_TOKEN_EXPIRY = 10,
+    PASSWORD_RESET_REDIS_KEY = 'password_reset_token'
 };

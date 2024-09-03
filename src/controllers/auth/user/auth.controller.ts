@@ -6,6 +6,7 @@ import {VerifyEmailRequestDto} from "../../../dtos/auth/verify-email-request.dto
 import {ResendEmailRequestDto} from "../../../dtos/auth/resend-email-request.dto";
 import {LoginRequestDto} from "../../../dtos/auth/login.request.dto";
 import {ResponseStatus} from "../../../enums/http-status-codes";
+import {RequestPasswordLinkDto} from "../../../dtos/auth/request-password-request.dto";
 
 export class AuthController {
 
@@ -62,7 +63,7 @@ export class AuthController {
     verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.authService.verifyEmail(req.body as VerifyEmailRequestDto);
-            return sendSuccessResponse(res,null,'Email verification successful.',200)
+            return sendSuccessResponse(res,null,'Email verification successful.',ResponseStatus.OK)
         } catch (e) {
             next(e);
         }
@@ -78,11 +79,29 @@ export class AuthController {
     resendEmail = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.authService.resendEmail(req.body as ResendEmailRequestDto);
-            return sendSuccessResponse(res,null,'Email verification resent successful.',200)
+            return sendSuccessResponse(res,null,'Email verification resent successful.',ResponseStatus.OK)
         } catch (e) {
             next(e);
         }
     }
+
+    /**
+     * Request password reset link
+     * @param req {Request}
+     * @param res (Response
+     * @param next {NextFunction}
+     * @returns {Response}
+     */
+    requestPasswordResetLink = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            await this.authService.requestPasswordResetLink(req.body as RequestPasswordLinkDto);
+            return sendSuccessResponse(res,null,'Password reset link sent successfully.',ResponseStatus.OK)
+        } catch (e) {
+            next(e);
+        }
+    }
+
+
 
 
 

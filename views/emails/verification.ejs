@@ -3,9 +3,11 @@
 <p>Hello, <%= name %>!</p>
 <p>Thank you for registering with us. Please verify your email address by clicking the link below:</p>
 <p class="button">
-    <a href="<%= verificationLink %>" class="btn">Verify Email</a>
+    <a href="<%= link %>" class="btn">Verify Email</a>
 </p>
-<p>If the link does not work, please copy it here  <a href="<%= verificationLink %>"><%= verificationLink %></a></p>
+<p>If the link does not work, please copy it below</p>
+<p><a href="<%= link %>"><%= link %></a></p>
+<p>Link expires in <%= expiry %> </p>
 <p>If you did not sign up for this account, please ignore this email.</p>
 <p>Thank you,<br><%= app_name %></p>
 

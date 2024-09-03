@@ -12,6 +12,7 @@ import {AuthController} from "../../controllers/auth/user/auth.controller";
 import {Router} from "express";
 import {LoginRequestDto} from "../../dtos/auth/login.request.dto";
 import {JwtService} from "../../utils/jwt/jwt.service";
+import {RequestPasswordLinkDto} from "../../dtos/auth/request-password-request.dto";
 
 const  router =  Router();
 
@@ -30,6 +31,7 @@ router.post('/register', validateBody(RegisterRequestDto), authController.regist
 router.post('/login', validateBody(LoginRequestDto), authController.login);
 router.post('/email/verify', validateBody(VerifyEmailRequestDto), authController.verifyEmail);
 router.post('/email/resend', validateBody(ResendEmailRequestDto), authController.resendEmail);
+router.post('/password-reset/request-link',validateBody(RequestPasswordLinkDto),authController.requestPasswordResetLink)
 
 
 export default router;

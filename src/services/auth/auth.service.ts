@@ -21,6 +21,7 @@ import {ResendEmailRequestDto} from "../../dtos/auth/resend-email-request.dto";
 import {LoginRequestDto} from "../../dtos/auth/login.request.dto";
 import {JwtService} from "../../utils/jwt/jwt.service";
 import {LoginResponseDto} from "../../dtos/auth/login.response.dto";
+import {RequestPasswordLinkDto} from "../../dtos/auth/request-password-request.dto";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -98,7 +99,7 @@ export class AuthService {
         const user = await this.userRepository.getByEmail(data.email);
 
         if (!user) {
-            throw new ClientErrorException('Email is already associated with an account');
+            throw new ClientErrorException('Email is not associated with an account');
         }
 
         const  isPasswordCorrect = await this.bcryptService.check(data.password,user.password);
@@ -121,26 +122,6 @@ export class AuthService {
         }
     }
 
-
-    /**
-     * Send email verification link
-     * @param user {User}
-     * @returns {Promise<void>}
-     */
-     async sendVerificationEmail(user:IUser ): Promise<void> {
-        const token = generateHash(user.email)
-        const expiry = Tokens.EMAIL_VERIFICATION_TOKEN * 60
-        await this.redisService.set(`${Tokens.EMAIL_VERIFICATION_REDIS_KEY}:${token}`, user.email,  expiry);
-        const verificationLink = `${configService.get('APP_FRONTEND_URL')}/auth/email/verify?token=${token}`;
-        const sendMailArgs: SendMailArgs = {
-            to: user.email,
-            subject: 'Please Verify Your Email',
-            view: 'emails/verification.ejs',
-            data: { name: user.displayName, verificationLink: verificationLink }
-        };
-        //Push the job to the queue to send the verification email
-        await jobQueue.add(Jobs.SEND_VERIFICATION_EMAIL,sendMailArgs);
-    }
 
     /**
      * Verify user email
@@ -202,7 +183,70 @@ export class AuthService {
 
     }
 
+    /**
+     * Resend user email
+     * @param data {RequestPasswordLinkDto}
+     * @returns {Promise<boolean>}
+     */
+    async requestPasswordResetLink(data:RequestPasswordLinkDto): Promise<boolean>{
 
+        const user = await this.userRepository.getByEmail(data.email)
+
+        if (!user){
+            throw new ClientErrorException("Email is not associated with any account",ResponseStatus.BAD_REQUEST)
+        }
+
+        try {
+            await this.sendPasswordResetLink(UserDto.make(user));
+            return true;
+        } catch (e) {
+            this.logger.error(`[AuthService Error] Resending Email verification failed with error: ${e}`);
+            throw new ClientErrorException("Failed to resend email.");
+        }
+
+    }
+
+
+
+    /**
+     * Send email verification link
+     * @param user {User}
+     * @returns {Promise<void>}
+     */
+    async sendVerificationEmail(user:IUser ): Promise<void> {
+        const token = generateHash(user.email)
+        const expiry = Tokens.EMAIL_VERIFICATION_TOKEN_EXPIRY ;
+        await this.redisService.set(`${Tokens.EMAIL_VERIFICATION_REDIS_KEY}:${token}`, user.email,  expiry*60);
+        const link = `${configService.get('APP_FRONTEND_URL')}/auth/email/verify?token=${token}`;
+        const sendMailArgs: SendMailArgs = {
+            to: user.email,
+            subject: 'Please Verify Your Email',
+            view: 'emails/verification.ejs',
+            data: { name: user.displayName, link,expiry:`${expiry} minutes` }
+        };
+        //Push the job to the queue to send the verification email
+        await jobQueue.add(Jobs.SEND_VERIFICATION_EMAIL,sendMailArgs);
+    }
+
+    /**
+     * Send password reset link
+     * @param user {User}
+     * @returns {Promise<void>}
+     */
+    async sendPasswordResetLink(user:IUser ): Promise<void> {
+        const token = generateHash(user.email)
+        const expiry = Tokens.PASSWORD_RESET_TOKEN_EXPIRY
+        await this.redisService.set(`${Tokens.PASSWORD_RESET_REDIS_KEY}:${token}`, user.email,  expiry*60);
+        const link = `${configService.get('APP_FRONTEND_URL')}/auth/password-reset/reset?token=${token}`;
+        const sendMailArgs: SendMailArgs = {
+            to: user.email,
+            subject: 'Password Reset Link',
+            view: 'emails/password-reset.ejs',
+            data: { name: user.displayName, link,expiry:`${expiry} minutes` }
+        };
+        //Push the job to the queue to send the verification email
+        await jobQueue.add(Jobs.SEND_PASSWORD_RESET_EMAIL,sendMailArgs);
+    }
 
 
 }

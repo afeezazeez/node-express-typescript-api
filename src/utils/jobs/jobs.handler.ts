@@ -1,5 +1,6 @@
 import {EmailService} from "../email/email.service";
 import {IEmailService} from "../email/email.service.interface";
+import {SendMailArgs} from "../../interfaces/email/send.email";
 
 export class JobHandlers {
     private readonly emailService:IEmailService;
@@ -8,7 +9,8 @@ export class JobHandlers {
         this.emailService = emailService
     }
 
-    public async handleSendVerificationEmail(data: any): Promise<void> {
+    public async sendEmail(data: SendMailArgs): Promise<void> {
         await this.emailService.sendMail(data);
     }
+
 }
