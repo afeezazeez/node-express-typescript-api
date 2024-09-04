@@ -1,4 +1,4 @@
-import {Request, Response, NextFunction, RequestHandler} from 'express';
+import {Request, Response, NextFunction} from 'express';
 import {RegisterRequestDto} from "../../../dtos/auth/register-request.dto";
 import {sendSuccessResponse} from "../../../utils/http-response/response-handlers";
 import {AuthService} from "../../../services/auth.service";
@@ -9,7 +9,7 @@ import {ResponseStatus} from "../../../enums/http-status-codes";
 import {RequestPasswordLinkDto} from "../../../dtos/auth/request-password-request.dto";
 import {ResetPasswordRequestDto} from "../../../dtos/auth/reset-password-request.dto";
 import {IRequestWithUser} from "../../../interfaces/request/request-user";
-import {AuthenticationException} from "../../../exceptions/authentication.exception";
+
 
 export class AuthController {
 
@@ -152,11 +152,5 @@ export class AuthController {
             next(e);
         }
     }
-
-
-
-
-
-
 
 }

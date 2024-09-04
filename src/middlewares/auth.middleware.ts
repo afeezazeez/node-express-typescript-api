@@ -5,7 +5,7 @@ import {UserService} from "../services/user.service";
 import {AuthenticationException} from "../exceptions/authentication.exception";
 import {IRequestWithUser} from "../interfaces/request/request-user";
 import {TokenBlacklistService} from "../utils/token-blacklist/token.blacklist.service";
-import {ResponseStatus} from "../enums/http-status-codes";
+
 
 export class AuthMiddleware {
     private readonly jwtService: JwtService;
@@ -45,7 +45,7 @@ export class AuthMiddleware {
             req.user = await this.userService.getUserByEmail(email);
             next();
         } catch (error) {
-            next(new AuthenticationException('Invalid or expired token'));
+            next(new AuthenticationException('Unauthenticated'));
         }
     }
 }

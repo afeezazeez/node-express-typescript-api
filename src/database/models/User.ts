@@ -48,3 +48,5 @@ export class User extends Model<User> {
     })
     email_verified_at!: string;
 }
+
+export default User;
