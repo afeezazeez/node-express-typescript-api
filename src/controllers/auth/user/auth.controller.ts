@@ -50,7 +50,23 @@ export class AuthController {
     login = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const response = await this.authService.login(req.body as LoginRequestDto);
-            return sendSuccessResponse(res,response,'Login successful.',ResponseStatus.OK)
+            return sendSuccessResponse(res,response,'Login successful.')
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    /**
+     * Get Authenticated user
+     * @param req {IRequestWithUser}
+     * @param res {Response}
+     * @param next {NextFunction}
+     * @returns {Response}
+     */
+    getAuthUser = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
+        try {
+            const response = await this.authService.getAuthUser(req);
+            return sendSuccessResponse(res,response)
         } catch (e) {
             next(e);
         }
@@ -67,7 +83,7 @@ export class AuthController {
         try {
             const token = req.headers.authorization ? req.headers.authorization.split(" ")[1] :null;
             const response = await this.authService.logout(token);
-            return sendSuccessResponse(res,response,'Logout successful.',ResponseStatus.OK)
+            return sendSuccessResponse(res,response,'Logout successful.')
         } catch (e) {
             next(e);
         }
@@ -83,7 +99,7 @@ export class AuthController {
     verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.authService.verifyEmail(req.body as VerifyEmailRequestDto);
-            return sendSuccessResponse(res,null,'Email verification successful.',ResponseStatus.OK)
+            return sendSuccessResponse(res,null,'Email verification successful.')
         } catch (e) {
             next(e);
         }
@@ -99,7 +115,7 @@ export class AuthController {
     resendEmail = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.authService.resendEmail(req.body as ResendEmailRequestDto);
-            return sendSuccessResponse(res,null,'Email verification resent successful.',ResponseStatus.OK)
+            return sendSuccessResponse(res,null,'Email verification resent successful.')
         } catch (e) {
             next(e);
         }
@@ -115,7 +131,7 @@ export class AuthController {
     requestPasswordResetLink = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.authService.requestPasswordResetLink(req.body as RequestPasswordLinkDto);
-            return sendSuccessResponse(res,null,'Password reset link sent successfully.',ResponseStatus.OK)
+            return sendSuccessResponse(res,null,'Password reset link sent successfully.')
         } catch (e) {
             next(e);
         }
@@ -131,7 +147,7 @@ export class AuthController {
     resetPassword = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.authService.resetPassword(req.body as ResetPasswordRequestDto);
-            return sendSuccessResponse(res,null,'Password was reset successfully.',ResponseStatus.OK)
+            return sendSuccessResponse(res,null,'Password was reset successfully.')
         } catch (e) {
             next(e);
         }

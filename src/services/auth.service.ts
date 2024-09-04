@@ -25,6 +25,7 @@ import {RequestPasswordLinkDto} from "../dtos/auth/request-password-request.dto"
 import {ResetPasswordRequestDto} from "../dtos/auth/reset-password-request.dto";
 import {TokenBlacklistService} from "../utils/token-blacklist/token.blacklist.service";
 import {Token} from "nodemailer/lib/xoauth2";
+import {IRequestWithUser} from "../interfaces/request/request-user";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -127,6 +128,18 @@ export class AuthService {
             throw new ClientErrorException("Login failed.");
         }
     }
+
+
+    /**
+     * Get Authenticated User
+     * @param req {IRequestWithUser}
+     * @returns {Promise<IUser | null>}
+     * @throws {ClientErrorException}
+     */
+    async getAuthUser(req: IRequestWithUser): Promise<IUser | null> {
+        return req.user || null;
+    }
+
 
     /**
      * Logout

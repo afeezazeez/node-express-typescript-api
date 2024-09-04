@@ -31,7 +31,7 @@ export class UserService {
     async getUserByEmail(email: string): Promise<IUser> {
 
         try {
-            const user = this.userRepository.getByEmail(email)
+            const user = await this.userRepository.getByEmail(email)
             return UserDto.make(user)
         } catch (e) {
             this.logger.error(`[UserService Error] Failed to retrieve user with email ${email} with error: ${e}`);
