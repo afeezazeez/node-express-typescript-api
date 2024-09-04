@@ -1,28 +1,30 @@
-import {UserRepository} from "../../repositories/user.repository";
-import {WinstonLogger} from "../../utils/logger/wintson.logger";
-import {BcryptService} from "../../utils/bycrypt/bycrypt.service";
-import {ILogger} from "../../utils/logger/logger.interface";
-import {RegisterRequestDto} from "../../dtos/auth/register-request.dto";
-import {ClientErrorException} from "../../exceptions/client.error.exception";
-import {IEmailService} from "../../utils/email/email.service.interface";
-import {EmailService} from "../../utils/email/email.service";
-import {jobQueue} from "../../config/queue/queue.config";
-import {Jobs} from "../../enums/jobs.types";
-import {Tokens} from "../../enums/tokens";
-import configService from "../../utils/config/config.service";
-import {IUser} from "../../interfaces/user/user.interface";
-import {generateHash} from "../../utils/crypto-util/crypto";
-import {SendMailArgs} from "../../interfaces/email/send.email";
-import {RedisService} from "../../utils/redis/redis.service";
-import {VerifyEmailRequestDto} from "../../dtos/auth/verify-email-request.dto";
-import {ResponseStatus} from "../../enums/http-status-codes";
-import UserDto from "../../dtos/user/user.dto";
-import {ResendEmailRequestDto} from "../../dtos/auth/resend-email-request.dto";
-import {LoginRequestDto} from "../../dtos/auth/login.request.dto";
-import {JwtService} from "../../utils/jwt/jwt.service";
-import {LoginResponseDto} from "../../dtos/auth/login.response.dto";
-import {RequestPasswordLinkDto} from "../../dtos/auth/request-password-request.dto";
-import {ResetPasswordRequestDto} from "../../dtos/auth/reset-password-request.dto";
+import {UserRepository} from "../repositories/user.repository";
+import {WinstonLogger} from "../utils/logger/wintson.logger";
+import {BcryptService} from "../utils/bycrypt/bycrypt.service";
+import {ILogger} from "../utils/logger/logger.interface";
+import {RegisterRequestDto} from "../dtos/auth/register-request.dto";
+import {ClientErrorException} from "../exceptions/client.error.exception";
+import {IEmailService} from "../utils/email/email.service.interface";
+import {EmailService} from "../utils/email/email.service";
+import {jobQueue} from "../config/queue/queue.config";
+import {Jobs} from "../enums/jobs.types";
+import {Tokens} from "../enums/tokens";
+import configService from "../utils/config/config.service";
+import {IUser} from "../interfaces/user/user.interface";
+import {generateHash} from "../utils/crypto-util/crypto";
+import {SendMailArgs} from "../interfaces/email/send.email";
+import {RedisService} from "../utils/redis/redis.service";
+import {VerifyEmailRequestDto} from "../dtos/auth/verify-email-request.dto";
+import {ResponseStatus} from "../enums/http-status-codes";
+import UserDto from "../dtos/user/user.dto";
+import {ResendEmailRequestDto} from "../dtos/auth/resend-email-request.dto";
+import {LoginRequestDto} from "../dtos/auth/login.request.dto";
+import {JwtService} from "../utils/jwt/jwt.service";
+import {LoginResponseDto} from "../dtos/auth/login.response.dto";
+import {RequestPasswordLinkDto} from "../dtos/auth/request-password-request.dto";
+import {ResetPasswordRequestDto} from "../dtos/auth/reset-password-request.dto";
+import {TokenBlacklistService} from "../utils/token-blacklist/token.blacklist.service";
+import {Token} from "nodemailer/lib/xoauth2";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -34,7 +36,8 @@ export class AuthService {
     private readonly emailService:IEmailService
     private readonly redisService:RedisService;
     private readonly provider;
-    private readonly jwtService:JwtService
+    private readonly jwtService:JwtService;
+    private readonly tokenBlacklistService:TokenBlacklistService
 
     constructor(
         userRepository: UserRepository,
@@ -43,6 +46,7 @@ export class AuthService {
         emailService:EmailService,
         redisService:RedisService,
         jwtService:JwtService,
+        tokenBlacklistService:TokenBlacklistService,
         provider:string,
     ) {
         this.userRepository = userRepository;
@@ -50,8 +54,9 @@ export class AuthService {
         this.bcryptService = bcryptService;
         this.emailService = emailService;
         this.redisService = redisService;
-        this.jwtService =jwtService
-        this.provider = provider
+        this.jwtService =jwtService;
+        this.tokenBlacklistService = tokenBlacklistService;
+        this.provider = provider;
     }
 
 
@@ -121,6 +126,16 @@ export class AuthService {
             this.logger.error(`[AuthService Error] Login failed with error: ${e}`);
             throw new ClientErrorException("Login failed.");
         }
+    }
+
+    /**
+     * Logout
+     * @param token
+     * @returns {void}
+     * @throws {ClientErrorException}
+     */
+    async logout(token:any): Promise<void> {
+        await this.tokenBlacklistService.addTokenToBlacklist(token);
     }
 
 
@@ -316,7 +331,7 @@ export class AuthService {
             attempts:3,
             backoff :{
                 type: 'fixed',
-                delay: 9000, // 5 seconds delay between retries
+                delay: 9000, // 9 seconds delay between retries
             }
         });
     }

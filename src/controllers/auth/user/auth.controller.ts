@@ -1,13 +1,15 @@
 import {Request, Response, NextFunction, RequestHandler} from 'express';
 import {RegisterRequestDto} from "../../../dtos/auth/register-request.dto";
 import {sendSuccessResponse} from "../../../utils/http-response/response-handlers";
-import {AuthService} from "../../../services/auth/auth.service";
+import {AuthService} from "../../../services/auth.service";
 import {VerifyEmailRequestDto} from "../../../dtos/auth/verify-email-request.dto";
 import {ResendEmailRequestDto} from "../../../dtos/auth/resend-email-request.dto";
 import {LoginRequestDto} from "../../../dtos/auth/login.request.dto";
 import {ResponseStatus} from "../../../enums/http-status-codes";
 import {RequestPasswordLinkDto} from "../../../dtos/auth/request-password-request.dto";
 import {ResetPasswordRequestDto} from "../../../dtos/auth/reset-password-request.dto";
+import {IRequestWithUser} from "../../../interfaces/request/request-user";
+import {AuthenticationException} from "../../../exceptions/authentication.exception";
 
 export class AuthController {
 
@@ -49,6 +51,23 @@ export class AuthController {
         try {
             const response = await this.authService.login(req.body as LoginRequestDto);
             return sendSuccessResponse(res,response,'Login successful.',ResponseStatus.OK)
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    /**
+     * Logout User
+     * @param req {IRequestWithUser}
+     * @param res {Response}
+     * @param next {NextFunction}
+     * @returns {Response}
+     */
+    logout = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
+        try {
+            const token = req.headers.authorization ? req.headers.authorization.split(" ")[1] :null;
+            const response = await this.authService.logout(token);
+            return sendSuccessResponse(res,response,'Logout successful.',ResponseStatus.OK)
         } catch (e) {
             next(e);
         }

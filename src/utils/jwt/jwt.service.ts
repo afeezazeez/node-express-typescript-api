@@ -21,7 +21,7 @@ export class JwtService {
     }
 
     // Method to verify a token and return the decoded payload
-    public verifyToken(token: string): JwtPayload | string {
+    public verifyToken(token: string): any {
         try {
             return jwt.verify(token, this.secret);
         } catch (error) {
