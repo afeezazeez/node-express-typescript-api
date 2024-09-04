@@ -40,11 +40,9 @@ import {models} from "../../database/models";
              .authenticate()
              .then(() => {
                  console.log('DB Connection Successful')
-                 this.logger.info('DB Connection Successful');
              })
              .catch((err) => {
                  console.log(`DB Connection Error: ${err}`)
-                 this.logger.error(`DB Connection Error: ${err}`);
                  process.exit(0);
              });
      }
