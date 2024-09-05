@@ -89,7 +89,7 @@ export class AuthService {
             await this.sendVerificationEmail(UserDto.make(newUser));
             return true;
         } catch (e) {
-            this.logger.error(`[AuthService Error] Registration failed with error: ${e}`);
+            this.logger.error(`[AuthService] Registration failed with error: ${e}`);
             throw new ClientErrorException("Registration failed.");
         }
     }
@@ -124,7 +124,7 @@ export class AuthService {
             const token = this.jwtService.signPayload(payload);
             return new LoginResponseDto(token,user.displayName);
         } catch (e) {
-            this.logger.error(`[AuthService Error] Login failed with error: ${e}`);
+            this.logger.error(`[AuthService] Login failed with error: ${e}`);
             throw new ClientErrorException("Login failed.");
         }
     }
@@ -178,7 +178,7 @@ export class AuthService {
             }
             return true;
         } catch (e) {
-            this.logger.error(`[AuthService Error] Email verification failed with error: ${e}`);
+            this.logger.error(`[AuthService] Email verification failed with error: ${e}`);
             throw new ClientErrorException("Email verification failed.");
         }
 
@@ -206,7 +206,7 @@ export class AuthService {
             await this.sendVerificationEmail(UserDto.make(user));
             return true;
         } catch (e) {
-            this.logger.error(`[AuthService Error] Resending Email verification failed with error: ${e}`);
+            this.logger.error(`[AuthService] Resending Email verification failed with error: ${e}`);
             throw new ClientErrorException("Failed to resend email.");
         }
 
@@ -229,7 +229,7 @@ export class AuthService {
             await this.sendPasswordResetLink(UserDto.make(user));
             return true;
         } catch (e) {
-            this.logger.error(`[AuthService Error] Resending Email verification failed with error: ${e}`);
+            this.logger.error(`[AuthService] Resending Email verification failed with error: ${e}`);
             throw new ClientErrorException("Failed to resend email.");
         }
 
@@ -279,7 +279,7 @@ export class AuthService {
             }
             return true;
         } catch (e) {
-            this.logger.error(`[AuthService Error] Password reset failed with error: ${e}`);
+            this.logger.error(`[AuthService] Password reset failed with error: ${e}`);
             throw new ClientErrorException("Failed to reset password.");
         }
 

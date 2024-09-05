@@ -41,7 +41,7 @@ worker.on('completed', job => {
 
 worker.on('failed', (job, err) => {
     const durationStr = getDurationString(job,true)
-    //console.log(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
+    console.log(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
     logger.error(`[Queue-Worker]Job  ${job?.name} failed with error ${err.message}`)
     logger.message(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
 

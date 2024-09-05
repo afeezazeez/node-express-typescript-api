@@ -57,7 +57,7 @@ export class EmailService implements IEmailService {
         try {
             await this.transporter.sendMail(mailOptions);
         } catch (error) {
-            this.logger.error(`[EmailService Error] Sending email failed with error: ${error}`);
+            this.logger.error(`[EmailService] Sending email failed with error: ${error}`);
             throw error;
         }
     }
