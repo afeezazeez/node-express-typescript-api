@@ -6,5 +6,6 @@ export enum ResponseStatus  {
     UNPROCCESSIBLE= 422,
     INTERNAL_SERVER = 500,
     OK=200,
+    TOO_MANY_REQUESTS=429,
 
 };

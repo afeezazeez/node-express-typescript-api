@@ -5,6 +5,7 @@ import {ValidationException} from '../exceptions/validation.exception';
 import {AuthenticationException} from '../exceptions/authentication.exception';
 import Logger from '../utils/logger/wintson.logger';
 import {ResponseStatus} from "../enums/http-status-codes";
+import {RateLimitException} from "../exceptions/rate.limit.exception";
 
 function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
     if (err instanceof ClientErrorException) {
@@ -16,6 +17,10 @@ function errorHandler(err: any, req: Request, res: Response, next: NextFunction)
     }
 
     if (err instanceof AuthenticationException) {
+        return sendErrorResponse(res, null, err.message, err.statusCode);
+    }
+
+    if (err instanceof RateLimitException) {
         return sendErrorResponse(res, null, err.message, err.statusCode);
     }
 

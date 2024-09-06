@@ -1,25 +1,36 @@
 import { transports, Logger, createLogger, LoggerOptions, format } from 'winston';
 const { combine, timestamp, label, prettyPrint } = format;
 import configService from "../config/config.service";
-import {ILogger} from "./logger.interface";
+import { ILogger } from "./logger.interface";
 import * as fs from 'fs';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
-
-export class WinstonLogger  implements ILogger{
+export class WinstonLogger implements ILogger {
     private readonly logConfig: LoggerOptions;
     public logger: Logger;
 
     constructor(scope: string) {
-        const filePath= configService.get<string>('LOG_FILE_PATH') ;
+        const filePath = configService.get<string>('LOG_FILE_PATH');
+        const logChannel = configService.get<string>('LOG_CHANNEL');
+
+        const fileTransport = logChannel === 'daily'
+            ? new DailyRotateFile({
+                filename: `${filePath}-%DATE%.log`,
+                datePattern: 'YYYY-MM-DD',
+                maxFiles: '14d', // Retain logs for 14 days
+            })
+            : new transports.File({
+                filename: filePath,
+            });
+
         this.logConfig = {
             transports: [
                 new transports.Console(),
-                new transports.File({
-                    filename: filePath,
-                }),
+                fileTransport,
             ],
             format: combine(label({ label: scope }), timestamp(), prettyPrint()),
         };
+
         this.logger = createLogger(this.logConfig);
     }
 
@@ -40,7 +51,6 @@ export class WinstonLogger  implements ILogger{
     }
 
     message(message: string): void {
-
         const logFilePath = configService.get('WORKER_LOG_FILE_PATH');
 
         if (!logFilePath) {

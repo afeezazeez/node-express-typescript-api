@@ -74,6 +74,7 @@ export class AuthService {
         const isEmailExist = await this.userRepository.getByEmail(email);
 
         if (isEmailExist) {
+            this.logger.error('Email is already associated with an account')
             throw new ClientErrorException('Email is already associated with an account');
         }
         const isDisplayNameExist = await this.userRepository.getByDisplayName(displayName);
