@@ -30,6 +30,24 @@ export class AuthController {
      * @param next {NextFunction}
      * @returns {Response}
      */
+    /**
+     * @swagger
+     * /api:
+     *   get:
+     *     summary: Returns hello world
+     *     tags: [Apis]
+     *     responses:
+     *       200:
+     *         description: the hello world message
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *                   description: The hello world message
+     */
     register = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const response = await this.authService.register(req.body as RegisterRequestDto);

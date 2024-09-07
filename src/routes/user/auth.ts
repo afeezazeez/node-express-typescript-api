@@ -43,6 +43,7 @@ const authService = new AuthService(
 
 const authController:AuthController = new AuthController(authService)
 router.get('/user',authMiddleware.authenticate, authController.getAuthUser);
+
 router.post('/register', validateBody(RegisterRequestDto), authController.register);
 router.post('/login', validateBody(LoginRequestDto), authController.login);
 router.post('/logout',authMiddleware.authenticate,  authController.logout);
