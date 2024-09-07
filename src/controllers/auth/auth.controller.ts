@@ -1,14 +1,14 @@
 import {Request, Response, NextFunction} from 'express';
-import {RegisterRequestDto} from "../../../dtos/auth/register-request.dto";
-import {sendSuccessResponse} from "../../../utils/http-response/response-handlers";
-import {AuthService} from "../../../services/auth.service";
-import {VerifyEmailRequestDto} from "../../../dtos/auth/verify-email-request.dto";
-import {ResendEmailRequestDto} from "../../../dtos/auth/resend-email-request.dto";
-import {LoginRequestDto} from "../../../dtos/auth/login.request.dto";
-import {ResponseStatus} from "../../../enums/http-status-codes";
-import {RequestPasswordLinkDto} from "../../../dtos/auth/request-password-request.dto";
-import {ResetPasswordRequestDto} from "../../../dtos/auth/reset-password-request.dto";
-import {IRequestWithUser} from "../../../interfaces/request/request-user";
+import {RegisterRequestDto} from "../../dtos/auth/register-request.dto";
+import {sendSuccessResponse} from "../../utils/http-response/response-handlers";
+import {AuthService} from "../../services/auth.service";
+import {VerifyEmailRequestDto} from "../../dtos/auth/verify-email-request.dto";
+import {ResendEmailRequestDto} from "../../dtos/auth/resend-email-request.dto";
+import {LoginRequestDto} from "../../dtos/auth/login.request.dto";
+import {ResponseStatus} from "../../enums/http-status-codes";
+import {RequestPasswordLinkDto} from "../../dtos/auth/request-password-request.dto";
+import {ResetPasswordRequestDto} from "../../dtos/auth/reset-password-request.dto";
+import {IRequestWithUser} from "../../interfaces/request/request-user";
 
 
 export class AuthController {

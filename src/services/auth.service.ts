@@ -1,4 +1,5 @@
 import {UserRepository} from "../repositories/user.repository";
+import {AdminRepository} from "../repositories/admin.repository";
 import {WinstonLogger} from "../utils/logger/wintson.logger";
 import {BcryptService} from "../utils/bycrypt/bycrypt.service";
 import {ILogger} from "../utils/logger/logger.interface";
@@ -24,24 +25,22 @@ import {LoginResponseDto} from "../dtos/auth/login.response.dto";
 import {RequestPasswordLinkDto} from "../dtos/auth/request-password-request.dto";
 import {ResetPasswordRequestDto} from "../dtos/auth/reset-password-request.dto";
 import {TokenBlacklistService} from "../utils/token-blacklist/token.blacklist.service";
-import {Token} from "nodemailer/lib/xoauth2";
 import {IRequestWithUser} from "../interfaces/request/request-user";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
  */
 export class AuthService {
-    private readonly userRepository: UserRepository;
     private readonly logger: ILogger;
     private readonly bcryptService: BcryptService;
     private readonly emailService:IEmailService
     private readonly redisService:RedisService;
     private readonly provider;
     private readonly jwtService:JwtService;
-    private readonly tokenBlacklistService:TokenBlacklistService
+    private readonly tokenBlacklistService:TokenBlacklistService;
+    private readonly authUserRepository: any;
 
     constructor(
-        userRepository: UserRepository,
         logger: WinstonLogger,
         bcryptService: BcryptService,
         emailService:EmailService,
@@ -50,7 +49,6 @@ export class AuthService {
         tokenBlacklistService:TokenBlacklistService,
         provider:string,
     ) {
-        this.userRepository = userRepository;
         this.logger = logger;
         this.bcryptService = bcryptService;
         this.emailService = emailService;
@@ -58,6 +56,9 @@ export class AuthService {
         this.jwtService =jwtService;
         this.tokenBlacklistService = tokenBlacklistService;
         this.provider = provider;
+        const userRepository = new UserRepository();
+        const adminRepository = new AdminRepository();
+        this.authUserRepository = provider === 'admin' ? adminRepository : userRepository;
     }
 
 
@@ -71,13 +72,13 @@ export class AuthService {
 
         const { displayName, email, password } = data;
 
-        const isEmailExist = await this.userRepository.getByEmail(email);
+        const isEmailExist = await this.authUserRepository.getByEmail(email);
 
         if (isEmailExist) {
             this.logger.error('Email is already associated with an account')
             throw new ClientErrorException('Email is already associated with an account');
         }
-        const isDisplayNameExist = await this.userRepository.getByDisplayName(displayName);
+        const isDisplayNameExist = await this.authUserRepository.getByDisplayName(displayName);
 
         if (isDisplayNameExist) {
             throw new ClientErrorException('Display name is already associated with an account');
@@ -86,7 +87,7 @@ export class AuthService {
         try {
             const password = await this.bcryptService.make(data.password);
             const userData = { ...data, password};
-            const newUser = await this.userRepository.create(userData);
+            const newUser = await this.authUserRepository.create(userData);
             await this.sendVerificationEmail(UserDto.make(newUser));
             return true;
         } catch (e) {
@@ -104,7 +105,7 @@ export class AuthService {
     async login(data: LoginRequestDto): Promise<LoginResponseDto> {
 
 
-        const user = await this.userRepository.getByEmail(data.email);
+        const user = await this.authUserRepository.getByEmail(data.email);
 
         if (!user) {
             throw new ClientErrorException('Email is not associated with an account');
@@ -116,7 +117,7 @@ export class AuthService {
             throw new ClientErrorException('Password is incorrect');
         }
 
-        if (!user.email_verified_at){
+        if (this.provider === 'user' && !user.email_verified_at){
             throw new ClientErrorException('Email has not be verified. Please request link');
         }
 
@@ -166,14 +167,14 @@ export class AuthService {
             throw new ClientErrorException("Verification link is invalid or has expired")
         }
 
-        const user = await this.userRepository.getByEmail(email)
+        const user = await this.authUserRepository.getByEmail(email)
 
         if (!user){
             throw new ClientErrorException("User not found",ResponseStatus.BAD_REQUEST)
         }
 
         try {
-            const response = await this.userRepository.update({email_verified_at: new Date()},user.id)
+            const response = await this.authUserRepository.update({email_verified_at: new Date()},user.id)
             if (response){
                 await this.redisService.del(`${Tokens.EMAIL_VERIFICATION_REDIS_KEY}:${data.token}`)
             }
@@ -193,7 +194,7 @@ export class AuthService {
      */
     async resendEmail(data:ResendEmailRequestDto): Promise<boolean>{
 
-        const user = await this.userRepository.getByEmail(data.email)
+        const user = await this.authUserRepository.getByEmail(data.email)
 
         if (!user){
             throw new ClientErrorException("Email is not associated with any account",ResponseStatus.BAD_REQUEST)
@@ -220,7 +221,7 @@ export class AuthService {
      */
     async requestPasswordResetLink(data:RequestPasswordLinkDto): Promise<boolean>{
 
-        const user = await this.userRepository.getByEmail(data.email)
+        const user = await this.authUserRepository.getByEmail(data.email)
 
         if (!user){
             throw new ClientErrorException("Email is not associated with any account",ResponseStatus.BAD_REQUEST)
@@ -253,7 +254,7 @@ export class AuthService {
             throw new ClientErrorException("Passwords do not  match")
         }
 
-        const user = await this.userRepository.getByEmail(email)
+        const user = await this.authUserRepository.getByEmail(email)
 
         if (!user){
             throw new ClientErrorException('Please request new link')
@@ -274,7 +275,7 @@ export class AuthService {
 
         try {
             const new_password = await this.bcryptService.make(data.new_password);
-            const response = await this.userRepository.update({password:new_password},user.id)
+            const response = await this.authUserRepository.update({password:new_password},user.id)
             if (response){
                 await this.redisService.del(`${Tokens.PASSWORD_RESET_REDIS_KEY}:${data.token}`)
             }

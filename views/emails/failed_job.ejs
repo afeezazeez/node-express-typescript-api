@@ -1,0 +1,14 @@
+<% title = 'Internal Job Failure Alert' %>
+<p>Hi Team,</p>
+
+<p>We encountered a failure in one of the background jobs:</p>
+
+<p><strong>Job Details:</strong></p>
+<ul>
+    <li><strong>Job Name:</strong> <%= name %></li>
+    <li><strong>Job ID:</strong> <%= id %></li>
+</ul>
+
+<p>Please check the logs and the <code>failed_jobs</code> database table for more details.</p>
+
+<p>Best regards,<br><%= app_name %> Engineering Team</p>

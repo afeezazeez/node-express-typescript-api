@@ -9,6 +9,7 @@ const emailService = new EmailService( new WinstonLogger('Worker'));
 const jobHandlers = new JobHandlers(emailService);
 const logger = new WinstonLogger('Worker');
 import {jobQueue} from "../../config/queue/queue.config";
+import {SendMailArgs} from "../../interfaces/email/send.email";
 
 
 const jobStartTimes = new Map<string, number>();
@@ -21,6 +22,7 @@ const worker = new Worker('jobQueue', async job => {
     switch (job.name) {
         case Jobs.SEND_VERIFICATION_EMAIL:
         case Jobs.SEND_PASSWORD_RESET_EMAIL:
+        case Jobs.SEND_FAILED_JOB_EMAIL:
             await jobHandlers.sendEmail(job.data);
             break;
     }
@@ -39,18 +41,32 @@ worker.on('completed', job => {
     logger.message(`[${formattedDate}] Job ${job.name} ................... ${durationStr} DONE`);
 });
 
-worker.on('failed', (job, err) => {
-    const durationStr = getDurationString(job,true)
+worker.on('failed', async (job, err) => {
+    const durationStr = getDurationString(job, true);
     console.log(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
-    logger.error(`[Queue-Worker]Job  ${job?.name} failed with error ${err.message}`)
+    logger.error(`[Queue-Worker]Job  ${job?.name} failed with error ${err.message}`);
     logger.message(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
 
     if (job && (job.attemptsMade === job.opts.attempts)) {
         console.log(`[${formattedDate}] Job ${job?.name} has exhausted all retries.`);
         logger.message(`[${formattedDate}] Job ${job?.name} has exhausted all retries.`);
 
-    }
+        const emailData: SendMailArgs = {
+            to: configService.get('APP_ENGINEERING_EMAIL') || 'engineering@chllingdev.com',
+            subject: 'New failed job after max tries',
+            view: 'emails/failed_job.ejs',
+            data: { name: job?.name, id: job?.id }
+        };
 
+        // Add the email notification to the queue, with retry settings
+        await jobQueue.add(Jobs.SEND_FAILED_JOB_EMAIL, emailData, {
+            attempts: 3,
+            backoff: {
+                type: 'fixed',
+                delay: 9000, // Retry after 9 seconds
+            }
+        });
+    }
 });
 
 

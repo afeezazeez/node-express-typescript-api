@@ -1,4 +1,4 @@
-import {UserRepository} from "../repositories/user.repository";
+import {AdminRepository} from "../repositories/admin.repository";
 import {WinstonLogger} from "../utils/logger/wintson.logger";
 import {ILogger} from "../utils/logger/logger.interface";
 import {ClientErrorException} from "../exceptions/client.error.exception";
@@ -7,18 +7,18 @@ import UserDto from "../dtos/user/user.dto";
 
 
 /**
- * User Service: contains all logic that's related to user model
+ * Admin Service: contains all logic that's related to admin model
  */
-export class UserService {
-    private readonly userRepository: UserRepository;
+export class AdminService {
+    private readonly adminRepository: AdminRepository;
     private readonly logger: ILogger;
 
 
     constructor(
-        userRepository: UserRepository,
+        adminRepository: AdminRepository,
         logger: WinstonLogger,
     ) {
-        this.userRepository = userRepository;
+        this.adminRepository = adminRepository;
         this.logger = logger;
     }
 
@@ -32,12 +32,11 @@ export class UserService {
     async getUserByEmail(email: string): Promise<IUser> {
 
         try {
-            console.log("IBA USER")
-            const user = await this.userRepository.getByEmail(email)
+            const user = await this.adminRepository.getByEmail(email)
             return UserDto.make(user)
         } catch (e) {
-            this.logger.error(`[UserService] Failed to retrieve user with email ${email} with error: ${e}`);
-            throw new ClientErrorException("Failed to retrieve user");
+            this.logger.error(`[AdminService] Failed to retrieve admin with email ${email} with error: ${e}`);
+            throw new ClientErrorException("Failed to retrieve admin");
         }
     }
 

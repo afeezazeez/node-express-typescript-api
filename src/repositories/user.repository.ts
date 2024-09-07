@@ -1,9 +1,10 @@
 import {User} from "../database/models/User";
 import {FindOptions} from 'sequelize';
+import {IUserRepository} from "./interfaces/user.repository.interface";
 
 
 
-export class UserRepository {
+export class UserRepository implements IUserRepository{
 
     async create(user:any): Promise<User> {
         try {
