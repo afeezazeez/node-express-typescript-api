@@ -10,12 +10,20 @@ export class JobHandler {
         this.emailService = emailService
     }
 
-    public async sendEmail(data: SendMailArgs): Promise<void> {
-        await this.emailService.sendMail(data);
-    }
-    public async handlePasswordResetEmail(data: SendMailArgs): Promise<void> {
-        await this.emailService.sendMail(data);
+    private async sendEmail(data: SendMailArgs): Promise<void> {
+        return this.emailService.sendMail(data);
     }
 
+    public async handleVerificationEmail(data: SendMailArgs): Promise<void> {
+        return this.sendEmail(data);
+    }
+
+    public async handlePasswordResetEmail(data: SendMailArgs): Promise<void> {
+        return this.sendEmail(data);
+    }
+
+    public async handleFailedJobEmail(data: SendMailArgs): Promise<void> {
+        return this.sendEmail(data);
+    }
 
 }

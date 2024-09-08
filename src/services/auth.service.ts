@@ -329,24 +329,27 @@ export class AuthService {
      * @param type
      * @returns {Promise<void>}
      */
-    async triggerEmail(user:IUser,emailData:SendMailArgs,type:string|null ): Promise<void> {
+    async triggerEmail(user: IUser, emailData: SendMailArgs, type: string | null): Promise<void> {
+        const token = generateHash(user.email);
+        const expiry = type === 'email-verify' ? Tokens.EMAIL_VERIFICATION_TOKEN_EXPIRY : Tokens.PASSWORD_RESET_TOKEN_EXPIRY;
+        const redisKey = type === 'email-verify' ? Tokens.EMAIL_VERIFICATION_REDIS_KEY : Tokens.PASSWORD_RESET_REDIS_KEY;
+        const baseUrl = configService.get('APP_FRONTEND_URL');
+        const urlPath = type === 'email-verify' ? 'email/verify' : 'password-reset/reset';
 
-        const token = generateHash(user.email)
-        const expiry =  type === 'email-verify' ? Tokens.EMAIL_VERIFICATION_TOKEN_EXPIRY : Tokens.PASSWORD_RESET_TOKEN_EXPIRY
-        const redisKey = type === 'email-verify' ? Tokens.EMAIL_VERIFICATION_REDIS_KEY : Tokens.PASSWORD_RESET_REDIS_KEY
-        const url =  type === 'email-verify' ? 'email/verify' : 'password-reset/reset'
-        const link = `${configService.get('APP_FRONTEND_URL')}/auth/${url}?token=${token}`;
-        const job_type = type === 'email-verify' ? Jobs.SEND_VERIFICATION_EMAIL : Jobs.SEND_PASSWORD_RESET_EMAIL
+        const urlPrefix = (this.provider === 'admin' && type !== 'email-verify') ? '/admin' : '';
+        const link = `${baseUrl}${urlPrefix}/auth/${urlPath}?token=${token}`;
 
+        const job_type = type === 'email-verify' ? Jobs.SEND_VERIFICATION_EMAIL : Jobs.SEND_PASSWORD_RESET_EMAIL;
 
-        await this.redisService.set(`${redisKey}:${token}`, user.email,  expiry*60);
+        await this.redisService.set(`${redisKey}:${token}`, user.email, expiry * 60);
+
         emailData.data = emailData.data || {};
         emailData.data.link = link;
         emailData.data.expiry = `${expiry} minutes`;
 
-        await this.jobService.dispatchSync(job_type,emailData);
-
+        await this.jobService.dispatch(job_type, emailData);
     }
+
 
 
 

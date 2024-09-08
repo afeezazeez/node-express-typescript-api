@@ -3,11 +3,11 @@ import {EmailService} from "../email/email.service";
 import { jobQueue } from "../../config/queue/queue.config";
 import configService from "../../utils/config/config.service";
 import {WinstonLogger} from "../logger/wintson.logger";
-import {ILogger} from "../logger/logger.interface";
+
 
 export class JobService {
     private readonly jobHandler: JobHandler;
-    private readonly queueType: string;
+    private readonly queueConnection: string;
     private readonly logger: WinstonLogger;
 
 
@@ -15,7 +15,7 @@ export class JobService {
         this.logger = new WinstonLogger("Job Service");
         const emailService = new EmailService(this.logger);
         this.jobHandler = new JobHandler(emailService);
-        this.queueType = configService.get('QUEUE_CONNECTION') || 'sync';
+        this.queueConnection = configService.get('QUEUE_CONNECTION') || 'sync';
     }
 
     public async dispatch(job: string, data: any): Promise<void> {
@@ -24,9 +24,9 @@ export class JobService {
 
         if (typeof this.jobHandler[jobName] === 'function') {
 
-            if (this.queueType === 'sync') {
+            if (this.queueConnection === 'sync') {
                 await this.jobHandler[jobName](data);
-            } else if (this.queueType === 'bull') {
+            } else if (this.queueConnection === 'bull') {
                 await jobQueue.add(jobName, data, {
                     attempts: 3,
                     backoff: {

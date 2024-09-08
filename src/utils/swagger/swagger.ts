@@ -3,7 +3,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 
 const options = {
     definition: {
-        openapi: '3.0.0', // OpenAPI 3.0 specification
+        openapi: '3.0.0',
         info: {
             title: 'My API',
             version: '1.0.0',
@@ -30,6 +30,7 @@ const options = {
         `${__dirname}/../../routes/**/*.ts`,
         `${__dirname}/swagger.ts`,
         `${__dirname}/../../controllers/**/*.ts`,
+        `${__dirname}/../../controllers/**/*.js`,
     ],
 }
 
