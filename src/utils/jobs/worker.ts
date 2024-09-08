@@ -1,30 +1,35 @@
-// processors/emailProcessor.ts
 import { Worker } from 'bullmq';
 import configService from '../../utils/config/config.service';
-import { JobHandlers } from './jobs.handler';
+import {JobHandler} from "./job.handler";
 import { Jobs } from '../../enums/jobs.types';
 import { EmailService } from '../email/email.service';
 import {WinstonLogger} from "../logger/wintson.logger";
 const emailService = new EmailService( new WinstonLogger('Worker'));
-const jobHandlers = new JobHandlers(emailService);
 const logger = new WinstonLogger('Worker');
 import {jobQueue} from "../../config/queue/queue.config";
 import {SendMailArgs} from "../../interfaces/email/send.email";
 
 
+const jobHandler = new JobHandler(emailService);
 const jobStartTimes = new Map<string, number>();
 const formattedDate = new Date().toISOString().replace('T', ' ').slice(0, 19);
 
 const worker = new Worker('jobQueue', async job => {
+
     jobStartTimes.set(job.id!, Date.now());
+
     console.log(`[${formattedDate}] Job ${job.name} ................... RUNNING`);
+
     logger.message(`[${formattedDate}] Job ${job.name} ................... RUNNING`);
-    switch (job.name) {
-        case Jobs.SEND_VERIFICATION_EMAIL:
-        case Jobs.SEND_PASSWORD_RESET_EMAIL:
-        case Jobs.SEND_FAILED_JOB_EMAIL:
-            await jobHandlers.sendEmail(job.data);
-            break;
+
+    const jobName = job.name as keyof JobHandler;
+
+    if (typeof jobHandler[jobName] === 'function') {
+        await jobHandler[jobName](job.data);
+    } else {
+        console.error(`[Queue-Worker] No job handler method found for job: ${job.name}`);
+        logger.error(`[Queue-Worker] No handler method found for job: ${job.name}`);
+
     }
 }, {
     connection: { host: configService.get('REDIS_HOST'), port: configService.get('REDIS_PORT') },
@@ -42,9 +47,13 @@ worker.on('completed', job => {
 });
 
 worker.on('failed', async (job, err) => {
+
     const durationStr = getDurationString(job, true);
+
     console.log(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
+
     logger.error(`[Queue-Worker]Job  ${job?.name} failed with error ${err.message}`);
+
     logger.message(`[${formattedDate}] Job ${job?.name} ................... ${durationStr} FAIL`);
 
     if (job && (job.attemptsMade === job.opts.attempts)) {
@@ -58,6 +67,8 @@ worker.on('failed', async (job, err) => {
             data: { name: job?.name, id: job?.id }
         };
 
+        // Save job to db
+
         // Add the email notification to the queue, with retry settings
         await jobQueue.add(Jobs.SEND_FAILED_JOB_EMAIL, emailData, {
             attempts: 3,
@@ -68,7 +79,6 @@ worker.on('failed', async (job, err) => {
         });
     }
 });
-
 
 function getDurationString(job:any,clear = false):string{
     const startTime = jobStartTimes.get(job.id!);

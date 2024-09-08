@@ -7,7 +7,6 @@ import {RegisterRequestDto} from "../dtos/auth/register-request.dto";
 import {ClientErrorException} from "../exceptions/client.error.exception";
 import {IEmailService} from "../utils/email/email.service.interface";
 import {EmailService} from "../utils/email/email.service";
-import {jobQueue} from "../config/queue/queue.config";
 import {Jobs} from "../enums/jobs.types";
 import {Tokens} from "../enums/tokens";
 import configService from "../utils/config/config.service";
@@ -26,6 +25,7 @@ import {RequestPasswordLinkDto} from "../dtos/auth/request-password-request.dto"
 import {ResetPasswordRequestDto} from "../dtos/auth/reset-password-request.dto";
 import {TokenBlacklistService} from "../utils/token-blacklist/token.blacklist.service";
 import {IRequestWithUser} from "../interfaces/request/request-user";
+import {JobService} from "../utils/jobs/job.service";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -39,6 +39,7 @@ export class AuthService {
     private readonly jwtService:JwtService;
     private readonly tokenBlacklistService:TokenBlacklistService;
     private readonly authUserRepository: any;
+    private readonly jobService:JobService;
 
     constructor(
         logger: WinstonLogger,
@@ -59,6 +60,7 @@ export class AuthService {
         const userRepository = new UserRepository();
         const adminRepository = new AdminRepository();
         this.authUserRepository = provider === 'admin' ? adminRepository : userRepository;
+        this.jobService = new JobService();
     }
 
 
@@ -341,14 +343,9 @@ export class AuthService {
         emailData.data = emailData.data || {};
         emailData.data.link = link;
         emailData.data.expiry = `${expiry} minutes`;
-        //Push the job to the queue to send the verification email
-        await jobQueue.add(job_type,emailData,{
-            attempts:3,
-            backoff :{
-                type: 'fixed',
-                delay: 9000, // 9 seconds delay between retries
-            }
-        });
+
+        await this.jobService.dispatchSync(job_type,emailData);
+
     }
 
 

@@ -26,9 +26,6 @@ databaseService.authenticate();
 // apply rate limiting
 app.use(throttle);
 
-app.use('/',(req: Request, res: Response, next: NextFunction) => {
-    return res.send("WORKINg")
-});
 
 app.use('/api', IndexRouter);
 
