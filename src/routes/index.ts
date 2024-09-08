@@ -7,7 +7,6 @@ const router = Router();
 
 router.use('/users', UserRouter);
 
-
 router.use('/admins', AdminRouter);
 
 export default router;

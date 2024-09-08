@@ -1,6 +1,5 @@
 import swaggerJSDoc from "swagger-jsdoc";
-
-
+import {schemas} from "./schemas";
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -10,6 +9,7 @@ const options = {
             description: 'A sample API documentation',
         },
         components: {
+            schemas,
             securitySchemes: {
                 BearerAuth: {
                     type: 'http',
@@ -25,15 +25,13 @@ const options = {
         ],
     },
     apis: [
-        `${__dirname}/../../routes/**/*.js`,
         `${__dirname}/swagger.js`,
-        `${__dirname}/../../routes/**/*.ts`,
         `${__dirname}/swagger.ts`,
         `${__dirname}/../../controllers/**/*.ts`,
         `${__dirname}/../../controllers/**/*.js`,
     ],
-}
+};
 
 const swaggerSpec = swaggerJSDoc(options)
 
-export default swaggerSpec
+export default swaggerSpec;

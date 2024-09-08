@@ -4,7 +4,7 @@ import {BcryptService} from "../../utils/bycrypt/bycrypt.service";
 import {EmailService} from "../../utils/email/email.service";
 import {RedisService} from "../../utils/redis/redis.service";
 import {AuthService} from "../../services/auth.service";
-import {AuthController} from "../../controllers/auth/auth.controller";
+import {AdminAuthController} from "../../controllers/auth/admin.auth.controller";
 import {Router} from "express";
 import {LoginRequestDto} from "../../dtos/auth/login.request.dto";
 import {JwtService} from "../../utils/jwt/jwt.service";
@@ -38,7 +38,7 @@ const authService = new AuthService(
     'admin'
 );
 
-const authController:AuthController = new AuthController(authService)
+const authController:AdminAuthController = new AdminAuthController(authService)
 
 
 router.get('/admin',authMiddleware.authenticate, authController.getAuthUser);
