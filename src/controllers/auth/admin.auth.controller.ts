@@ -20,7 +20,7 @@ export class AdminAuthController {
      * @swagger
      * /api/admins/auth/login:
      *   post:
-     *     summary: Login a user
+     *     summary: Login in an admin
      *     tags: [Admin Auth]
      *     requestBody:
      *       required: true
@@ -34,7 +34,7 @@ export class AdminAuthController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/SuccessResponse'
+     *               $ref: '#/components/schemas/LoginSuccessResponse'
      *       400:
      *         description: Bad request - Either password is incorrect or email is not associated with any account
      *         content:
@@ -68,7 +68,13 @@ export class AdminAuthController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/SuccessResponse'
+     *               $ref: '#/components/schemas/AuthUserDetailResponse'
+     *       401:
+     *         description: Unauthorized
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/UnauthorisedErrorResponse'
      */
     getAuthUser = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
         try {
@@ -83,7 +89,7 @@ export class AdminAuthController {
      * @swagger
      * /api/admins/auth/logout:
      *   post:
-     *     summary: Logout the authenticated user
+     *     summary: Logout the authenticated admin
      *     tags: [Admin Auth]
      *     security:
      *       - BearerAuth: []
@@ -93,7 +99,14 @@ export class AdminAuthController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/SuccessResponse'
+     *               $ref: '#/components/schemas/LogoutSuccessResponse'
+     *       401:
+     *         description: Unauthorized
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/UnauthorisedErrorResponse'
+     *
      */
     logout = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
         try {
@@ -108,7 +121,7 @@ export class AdminAuthController {
 
     /**
      * @swagger
-     * /api/admins/auth/password/request-reset:
+     * /api/admins/auth/password-reset/request-link:
      *   post:
      *     summary: Request password reset link
      *     tags: [Admin Auth]
@@ -117,14 +130,20 @@ export class AdminAuthController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/RequestPasswordLinkDto'
+     *             $ref: '#/components/schemas/ForgotPasswordAndVerifyEmailRequestDto'
      *     responses:
      *       200:
      *         description: Password reset link sent
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/SuccessResponse'
+     *               $ref: '#/components/schemas/PasswordResetLinkSuccessResponse'
+     *       400:
+     *         description: Incorrect email
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/EmailIncorrectErrorResponse'
      */
     requestPasswordResetLink = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -135,9 +154,10 @@ export class AdminAuthController {
         }
     };
 
+
     /**
      * @swagger
-     * /api/admins/auth/password/reset:
+     * /api/admins/auth/password-reset/reset-password:
      *   post:
      *     summary: Reset password
      *     tags: [Admin Auth]
@@ -153,7 +173,18 @@ export class AdminAuthController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/SuccessResponse'
+     *               $ref: '#/components/schemas/PasswordResetSuccessful'
+     *
+     *       400:
+     *         description: Bad request - Either password is incorrect or email is not associated with any account
+     *         content:
+     *           application/json:
+     *             schema:
+     *                oneOf:
+     *                  - $ref: '#/components/schemas/InvalidPasswordResetLinkResponse'
+     *                  - $ref: '#/components/schemas/OldPasswordIncorrectResponse'
+     *                  - $ref: '#/components/schemas/OldPasswordAsNewPasswordResponse'
+     *                  - $ref: '#/components/schemas/PasswordDoNotMatchResponse'
      */
     resetPassword = async (req: Request, res: Response, next: NextFunction) => {
         try {

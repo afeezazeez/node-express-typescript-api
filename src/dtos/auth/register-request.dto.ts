@@ -8,8 +8,8 @@ export class RegisterRequestDto {
     @IsEmail({}, { message: 'Invalid email address.' })
     email!: string;
 
-    @MinLength(6, { message: 'New password must be at least 6 characters long.' })
-    @MaxLength(12, { message: 'New password must not exceed 12 characters.' })
+    @MinLength(6, { message: 'Password must be at least 6 characters long.' })
+    @MaxLength(12, { message: 'Password must not exceed 12 characters.' })
     @IsNotEmpty({ message: 'Password is required.' })
     password!: string;
 }

@@ -24,13 +24,13 @@ export class AuthMiddleware {
     public authenticate: RequestHandler = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            return next(new AuthenticationException('No authentication header provided'));
+            return next(new AuthenticationException('Unauthenticated'));
         }
 
         const token = authHeader.split(' ')[1];
 
         if (!token) {
-            return next(new AuthenticationException('No authentication token provided'));
+            return next(new AuthenticationException('Unauthenticated'));
         }
 
         const isTokenBlacklisted = await this.tokenBlacklistService.isTokenBlacklisted(token)
