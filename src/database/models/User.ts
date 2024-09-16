@@ -10,11 +10,19 @@ import { Table, Column, Model, DataType } from 'sequelize-typescript';
 export class User extends Model<User> {
 
     @Column({
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataType.INTEGER,
+    })
+    id!: number;
+
+    @Column({
         primaryKey:true,
         type: DataType.UUIDV4,
         defaultValue: DataType.UUIDV4,
     })
-    id!: string;
+    uuid!: string;
+
 
     @Column({
         type: DataType.STRING,
@@ -46,7 +54,7 @@ export class User extends Model<User> {
         type: DataType.DATE,
         allowNull: true,
     })
-    email_verified_at!: string;
+    email_verified_at!: Date;
 }
 
 export default User;

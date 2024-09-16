@@ -26,6 +26,7 @@ import {ResetPasswordRequestDto} from "../dtos/auth/reset-password-request.dto";
 import {TokenBlacklistService} from "../utils/token-blacklist/token.blacklist.service";
 import {IRequestWithUser} from "../interfaces/request/request-user";
 import {JobService} from "../utils/jobs/job.service";
+import User from "../database/models/User";
 
 /**
  * Authentication Service: contains all logic that's related to user authentication
@@ -176,7 +177,7 @@ export class AuthService {
         }
 
         try {
-            const response = await this.authUserRepository.update({email_verified_at: new Date()},user.id)
+            const response = await this.authUserRepository.update(user.id,{email_verified_at: new Date()} as Partial<User>)
             if (response){
                 await this.redisService.del(`${Tokens.EMAIL_VERIFICATION_REDIS_KEY}:${data.token}`)
             }
@@ -277,7 +278,7 @@ export class AuthService {
 
         try {
             const new_password = await this.bcryptService.make(data.new_password);
-            const response = await this.authUserRepository.update({password:new_password},user.id)
+            const response = await this.authUserRepository.update(user.id,{password:new_password})
             if (response){
                 await this.redisService.del(`${Tokens.PASSWORD_RESET_REDIS_KEY}:${data.token}`)
             }

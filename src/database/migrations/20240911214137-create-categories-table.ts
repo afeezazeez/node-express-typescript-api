@@ -7,7 +7,7 @@ import { QueryInterface, DataTypes } from 'sequelize';
 
 export default {
   up: async (queryInterface: QueryInterface): Promise<void> => {
-  await queryInterface.createTable('admins', {
+  await queryInterface.createTable('categories', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -20,19 +20,10 @@ export default {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    email: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-    },
-    display_name:{
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
     },
     enabled: {
       type: DataTypes.BOOLEAN,
@@ -56,6 +47,6 @@ export default {
 },
 
 down: async (queryInterface: QueryInterface): Promise<void> => {
-  await queryInterface.dropTable('admins');
+  await queryInterface.dropTable('categories');
 },
 };

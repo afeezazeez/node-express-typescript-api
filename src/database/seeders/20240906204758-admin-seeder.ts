@@ -10,11 +10,11 @@ module.exports = {
   async up (queryInterface:QueryInterface, Sequelize:Sequelize) {
     const admins = await Promise.all(
         Array.from({ length: 2 }).map(async () => ({
-          id: faker.string.uuid(), // Generate a new UUID for each user
+          uuid: faker.string.uuid(),
           display_name:faker.person.lastName(),
           email: faker.internet.email(),
-          password: await bcryptService.make(faker.internet.password()), // Await password hashing
-          avatar: faker.image.url(),
+          password: await bcryptService.make('admin'), // Await password hashing
+          enabled:true,
           created_at: new Date(),
           updated_at: new Date(),
           deleted_at: null,

@@ -4,10 +4,11 @@
 
 
 import { QueryInterface, DataTypes } from 'sequelize';
+import {DataType} from "sequelize-typescript";
 
 export default {
   up: async (queryInterface: QueryInterface): Promise<void> => {
-  await queryInterface.createTable('admins', {
+  await queryInterface.createTable('products', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -20,19 +21,32 @@ export default {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    email: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    display_name:{
-      type: DataTypes.STRING,
+    description: {
+      type: DataTypes.TEXT,
       allowNull: false,
-      unique: true,
     },
-    password: {
-      type: DataTypes.STRING,
+    price: {
+      type: DataType.DECIMAL(10, 2),
       allowNull: false,
+    },
+    quantity: {
+      type: DataType.INTEGER,
+      allowNull: false,
+    },
+    category_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'categories',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     enabled: {
       type: DataTypes.BOOLEAN,
@@ -56,6 +70,6 @@ export default {
 },
 
 down: async (queryInterface: QueryInterface): Promise<void> => {
-  await queryInterface.dropTable('admins');
+  await queryInterface.dropTable('products');
 },
 };

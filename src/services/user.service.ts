@@ -32,7 +32,6 @@ export class UserService {
     async getUserByEmail(email: string): Promise<IUser> {
 
         try {
-            console.log("IBA USER")
             const user = await this.userRepository.getByEmail(email)
             return UserDto.make(user)
         } catch (e) {

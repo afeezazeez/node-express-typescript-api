@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { RegisterRequestDto } from "../../dtos/auth/register-request.dto";
-import { sendSuccessResponse } from "../../utils/http-response/response-handlers";
+import { sendSuccessResponse } from "../../utils/http/response-handlers";
 import { AuthService } from "../../services/auth.service";
 import { VerifyEmailRequestDto } from "../../dtos/auth/verify-email-request.dto";
 import { ResendEmailRequestDto } from "../../dtos/auth/resend-email-request.dto";

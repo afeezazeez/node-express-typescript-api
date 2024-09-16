@@ -9,11 +9,11 @@ export default {
     // Create users array with resolved promises
     const users = await Promise.all(
         Array.from({ length: 20 }).map(async () => ({
-          id: faker.string.uuid(), // Generate a new UUID for each user
+          uuid: faker.string.uuid(), // Generate a new UUID for each user
           display_name:faker.person.lastName(),
           email: faker.internet.email(),
           password: await bcryptService.make(faker.internet.password()), // Await password hashing
-          avatar: faker.image.url(),
+          enabled:true,
           created_at: new Date(),
           updated_at: new Date(),
           deleted_at: null,

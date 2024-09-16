@@ -1,6 +1,6 @@
 import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
-import { ClientErrorException } from '../../exceptions/client.error.exception';
 import configService from "../config/config.service";
+
 
 
 export class JwtService {
@@ -16,7 +16,7 @@ export class JwtService {
         try {
             return jwt.sign(payload, this.secret, signOptions);
         } catch (error) {
-            throw new ClientErrorException('Error signing the payload');
+            throw error;
         }
     }
 
@@ -25,7 +25,7 @@ export class JwtService {
         try {
             return jwt.verify(token, this.secret);
         } catch (error) {
-            throw new ClientErrorException('Invalid or expired token', 401);
+            throw error;
         }
     }
 }

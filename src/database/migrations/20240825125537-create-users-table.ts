@@ -10,6 +10,12 @@ export default {
     await queryInterface.createTable('users', {
       id: {
         allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      uuid: {
+        allowNull: false,
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -35,6 +41,10 @@ export default {
       email_verified_at: {
         type: DataTypes.DATE,
         allowNull: true,
+      },
+      enabled: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
       },
       created_at: {
         allowNull: false,

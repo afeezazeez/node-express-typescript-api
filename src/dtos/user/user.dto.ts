@@ -5,7 +5,6 @@ class UserDto implements IUser {
     displayName: string;
     email: string;
     created_at: string;
-    avatar: string;
 
 
     constructor(userModel: any) {
@@ -13,7 +12,6 @@ class UserDto implements IUser {
         this.displayName = userModel.displayName;
         this.email = userModel.email;
         this.created_at = userModel.created_at;
-        this.avatar = userModel.avatar;
 
     }
 
@@ -24,7 +22,6 @@ class UserDto implements IUser {
             displayName: userDto.displayName,
             email: userDto.email,
             created_at: userDto.created_at,
-            avatar: userDto.avatar,
         };
     }
 

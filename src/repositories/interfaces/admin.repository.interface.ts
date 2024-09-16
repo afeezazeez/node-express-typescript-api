@@ -1,6 +1,6 @@
 import Admin from "../../database/models/Admin";
-import {IRepository} from "./repositories.base.interface";
+import {IBaseRepository} from "./base.repository.interface";
 
-export interface IAdminRepository extends IRepository<User> {
+export interface IAdminRepository extends IBaseRepository<Admin>{
     getByEmail(email: string): Promise<Admin | null>;
 }

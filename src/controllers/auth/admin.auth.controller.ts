@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendSuccessResponse } from "../../utils/http-response/response-handlers";
+import { sendSuccessResponse } from "../../utils/http/response-handlers";
 import { AuthService } from "../../services/auth.service";
 
 import { LoginRequestDto } from "../../dtos/auth/login.request.dto";

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { sendErrorResponse } from '../utils/http-response/response-handlers';
+import { sendErrorResponse } from '../utils/http/response-handlers';
 import {ClientErrorException} from '../exceptions/client.error.exception';
 import {ValidationException} from '../exceptions/validation.exception';
 import {AuthenticationException} from '../exceptions/authentication.exception';

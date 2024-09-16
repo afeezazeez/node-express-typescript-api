@@ -1,7 +1,7 @@
 import { User } from '../database/models/User';
-import {IRepository} from "./repositories.base.interface";
+import {IBaseRepository} from "./base.repository.interface";
 
-export interface IUserRepository extends IRepository<User> {
+export interface IUserRepository extends IBaseRepository<User>{
     getByEmail(email: string): Promise<User | null>;
     getByDisplayName(displayName: string): Promise<User | null>;
 }
