@@ -25,21 +25,49 @@ export class ProductController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/CreateProductCategory'
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 example: 'Pizza'
+     *             required:
+     *               - name
      *     responses:
      *       200:
      *         description: Product saved
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/CreateProductCategorySuccess'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Product saved!'
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     name:
+     *                       type: string
+     *                       example: 'Monitors'
+     *                     uuid:
+     *                       type: string
+     *                       example: 'c05aa041-3f3c-4ca9-92df-9cbb3d66e3b7'
      *       400:
      *         description: Bad request
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/CreateProductCategoryError'
-     *
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Category name exists'
      */
     storeCategory = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -90,8 +118,6 @@ export class ProductController {
      *             schema:
      *               $ref: '#/components/schemas/FetchProductCategorySuccess'
      */
-
-
     getCategories = async (req: Request, res: Response, next: NextFunction) => {
 
         try {

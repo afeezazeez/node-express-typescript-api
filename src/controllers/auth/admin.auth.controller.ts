@@ -20,30 +20,71 @@ export class AdminAuthController {
      * @swagger
      * /api/admins/auth/login:
      *   post:
-     *     summary: Login in an admin
+     *     summary: Login an admin
      *     tags: [Admin Auth]
      *     requestBody:
      *       required: true
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/LoginRequestDto'
+     *             type: object
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 example: 'Etha62@hotmail.com'
+     *               password:
+     *                 type: string
+     *                 format: password
+     *                 example: '123456'
+     *             required:
+     *               - email
+     *               - password
      *     responses:
      *       200:
      *         description: Login successful
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/LoginSuccessResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Login successful'
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     token:
+     *                       type: string
+     *                       example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+     *                     display_name:
+     *                       type: string
+     *                       example: 'johndoe'
      *       400:
      *         description: Bad request - Either password is incorrect or email is not associated with any account
      *         content:
      *           application/json:
      *             schema:
-     *                oneOf:
-     *                  - $ref: '#/components/schemas/PasswordIncorrectErrorResponse'
-     *                  - $ref: '#/components/schemas/EmailIncorrectErrorResponse'
-     *
+     *               oneOf:
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Password is incorrect'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Email is not associated with an account'
      */
     login = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -68,13 +109,33 @@ export class AdminAuthController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/AuthUserDetailResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     displayName:
+     *                       type: string
+     *                       example: 'john@12'
+     *                     email:
+     *                       type: string
+     *                       example: 'Alvah30@yahoo.com'
      *       401:
      *         description: Unauthorized
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/UnauthorisedErrorResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Unauthenticated'
      */
     getAuthUser = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
         try {
@@ -99,14 +160,27 @@ export class AdminAuthController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/LogoutSuccessResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Logout successful.'
      *       401:
      *         description: Unauthorized
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/UnauthorisedErrorResponse'
-     *
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Unauthenticated'
      */
     logout = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
         try {
@@ -130,20 +204,41 @@ export class AdminAuthController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/ForgotPasswordAndVerifyEmailRequestDto'
+     *             type: object
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 example: 'Alvah30@yahoo.com'
+     *             required:
+     *               - email
      *     responses:
      *       200:
      *         description: Password reset link sent
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/PasswordResetLinkSuccessResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Password reset link sent successfully.'
      *       400:
      *         description: Incorrect email
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/EmailIncorrectErrorResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Email is not associated with an account'
      */
     requestPasswordResetLink = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -166,25 +261,77 @@ export class AdminAuthController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/ResetPasswordRequestDto'
+     *             type: object
+     *             properties:
+     *               token:
+     *                 type: string
+     *                 example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+     *               old_password:
+     *                 type: string
+     *                 example: 'oldPassword123'
+     *               new_password:
+     *                 type: string
+     *                 example: 'newPassword123'
+     *               confirm_new_password:
+     *                 type: string
+     *                 example: 'newPassword123'
+     *             required:
+     *               - token
+     *               - old_password
+     *               - new_password
+     *               - confirm_new_password
      *     responses:
      *       200:
      *         description: Password reset successful
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/PasswordResetSuccessful'
-     *
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Password was reset successfully.'
      *       400:
-     *         description: Bad request - Either password is incorrect or email is not associated with any account
+     *         description: Bad request - Various possible errors
      *         content:
      *           application/json:
      *             schema:
-     *                oneOf:
-     *                  - $ref: '#/components/schemas/InvalidPasswordResetLinkResponse'
-     *                  - $ref: '#/components/schemas/OldPasswordIncorrectResponse'
-     *                  - $ref: '#/components/schemas/OldPasswordAsNewPasswordResponse'
-     *                  - $ref: '#/components/schemas/PasswordDoNotMatchResponse'
+     *               oneOf:
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Password reset link is invalid or has expired'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Old password is incorrect'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Please set a new password different from old password'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Passwords do not match'
      */
     resetPassword = async (req: Request, res: Response, next: NextFunction) => {
         try {

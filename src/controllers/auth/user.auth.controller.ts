@@ -29,26 +29,76 @@ export class UserAuthController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/RegisterDto'
+     *             type: object
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 example: 'user@example.com'
+     *               displayName:
+     *                 type: string
+     *                 example: 'JohnDoe'
+     *               password:
+     *                 type: string
+     *                 example: 'password123'
+     *             required:
+     *               - email
+     *               - displayName
+     *               - password
      *     responses:
      *       201:
      *         description: Registration successful
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/RegisterSuccessResponse'
-     *
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Registration successful. Please check your email'
      *       400:
-     *         description: Bad request
+     *         description: Bad request - Various validation errors
      *         content:
      *           application/json:
      *             schema:
-     *                oneOf:
-     *                  - $ref: '#/components/schemas/EmailTakenResponse'
-     *                  - $ref: '#/components/schemas/DisplayNameTakenResponse'
-     *                  - $ref: '#/components/schemas/ShortPasswordResponse'
-     *                  - $ref: '#/components/schemas/LargePasswordResponse'
+     *               oneOf:
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Email is already associated with an account'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Display name is already associated with an account'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Password must be at least 6 characters long.'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Password must not exceed 12 characters.'
      */
+
     register = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const response = await this.authService.register(req.body as RegisterRequestDto);
@@ -63,30 +113,71 @@ export class UserAuthController {
      * @swagger
      * /api/users/auth/login:
      *   post:
-     *     summary: Login  a user
+     *     summary: Login an user
      *     tags: [User Auth]
      *     requestBody:
      *       required: true
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/LoginRequestDto'
+     *             type: object
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 example: 'azeezafeez212@gmail.com'
+     *               password:
+     *                 type: string
+     *                 format: password
+     *                 example: '123456'
+     *             required:
+     *               - email
+     *               - password
      *     responses:
      *       200:
      *         description: Login successful
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/LoginSuccessResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Login successful'
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     token:
+     *                       type: string
+     *                       example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+     *                     display_name:
+     *                       type: string
+     *                       example: 'chilling'
      *       400:
      *         description: Bad request - Either password is incorrect or email is not associated with any account
      *         content:
      *           application/json:
      *             schema:
-     *                oneOf:
-     *                  - $ref: '#/components/schemas/PasswordIncorrectErrorResponse'
-     *                  - $ref: '#/components/schemas/EmailIncorrectErrorResponse'
-     *
+     *               oneOf:
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Password is incorrect'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Email is not associated with an account'
      */
     login = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -101,7 +192,7 @@ export class UserAuthController {
      * @swagger
      * /api/users/auth/user:
      *   get:
-     *     summary: Get the authenticated user
+     *     summary: Get the authenticated admin
      *     tags: [User Auth]
      *     security:
      *       - BearerAuth: []
@@ -111,13 +202,33 @@ export class UserAuthController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/AuthUserDetailResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     displayName:
+     *                       type: string
+     *                       example: 'chilling'
+     *                     email:
+     *                       type: string
+     *                       example: 'azeezafeez212@gmail.com'
      *       401:
      *         description: Unauthorized
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/UnauthorisedErrorResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Unauthenticated'
      */
     getAuthUser = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
         try {
@@ -127,6 +238,7 @@ export class UserAuthController {
             next(e);
         }
     };
+
 
 
     /**
@@ -143,14 +255,27 @@ export class UserAuthController {
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/LogoutSuccessResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Logout successful.'
      *       401:
      *         description: Unauthorized
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/UnauthorisedErrorResponse'
-     *
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Unauthenticated'
      */
     logout = async (req: IRequestWithUser, res: Response, next: NextFunction) => {
         try {
@@ -173,22 +298,42 @@ export class UserAuthController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/VerifyEmailLinkRequestDto'
+     *             type: object
+     *             properties:
+     *               token:
+     *                 type: string
+     *                 example: '02840877ad59ea384a38f55f971c82fe95a25593179b1ea1bdef5f843fe1'
+     *             required:
+     *               - token
      *     responses:
      *       200:
      *         description: Email verification successful
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/EmailVerificationSuccessResponse'
-     *
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Email verification successful.'
      *       400:
-     *         description: Bad Request
+     *         description: Bad Request - Invalid or expired verification link
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/EmailVerificationTokenErrorResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Verification link is invalid or has expired'
      */
+
     verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.authService.verifyEmail(req.body as VerifyEmailRequestDto);
@@ -209,25 +354,52 @@ export class UserAuthController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/ForgotPasswordAndVerifyEmailRequestDto'
+     *             type: object
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 example: 'azeezafeez212@gmail.com'
+     *             required:
+     *               - email
      *     responses:
      *       200:
      *         description: Verification link sent
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/EmailVerificationLinkSuccessResponse'
-     *
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Verification email resent successfully.'
      *       400:
      *         description: Bad request
      *         content:
      *           application/json:
      *             schema:
-     *                oneOf:
-     *                  -  $ref: '#/components/schemas/EmailIncorrectErrorResponse'
-     *                  - $ref: '#/components/schemas/AccountVerifiedErrorResponse'
-     *
+     *               oneOf:
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Email is not associated with an account.'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Account is already verified'
      */
+
     resendEmail = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.authService.resendEmail(req.body as ResendEmailRequestDto);
@@ -248,20 +420,41 @@ export class UserAuthController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/ForgotPasswordAndVerifyEmailRequestDto'
+     *             type: object
+     *             properties:
+     *               email:
+     *                 type: string
+     *                 format: email
+     *                 example: 'azeezafeez212@gmail.com'
+     *             required:
+     *               - email
      *     responses:
      *       200:
      *         description: Password reset link sent
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/PasswordResetLinkSuccessResponse'
-     *       401:
-     *         description: Unauthorized
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Password reset link sent successfully.'
+     *       400:
+     *         description: Incorrect email
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/EmailIncorrectErrorResponse'
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Email is not associated with an account'
      */
     requestPasswordResetLink = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -283,25 +476,77 @@ export class UserAuthController {
      *       content:
      *         application/json:
      *           schema:
-     *             $ref: '#/components/schemas/ResetPasswordRequestDto'
+     *             type: object
+     *             properties:
+     *               token:
+     *                 type: string
+     *                 example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+     *               old_password:
+     *                 type: string
+     *                 example: 'oldPassword123'
+     *               new_password:
+     *                 type: string
+     *                 example: 'newPassword123'
+     *               confirm_new_password:
+     *                 type: string
+     *                 example: 'newPassword123'
+     *             required:
+     *               - token
+     *               - old_password
+     *               - new_password
+     *               - confirm_new_password
      *     responses:
      *       200:
      *         description: Password reset successful
      *         content:
      *           application/json:
      *             schema:
-     *               $ref: '#/components/schemas/PasswordResetSuccessful'
-     *
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: true
+     *                 message:
+     *                   type: string
+     *                   example: 'Password was reset successfully.'
      *       400:
-     *         description: Bad request - Either password is incorrect or email is not associated with any account
+     *         description: Bad request - Various possible errors
      *         content:
      *           application/json:
      *             schema:
-     *                oneOf:
-     *                  - $ref: '#/components/schemas/InvalidPasswordResetLinkResponse'
-     *                  - $ref: '#/components/schemas/OldPasswordIncorrectResponse'
-     *                  - $ref: '#/components/schemas/OldPasswordAsNewPasswordResponse'
-     *                  - $ref: '#/components/schemas/PasswordDoNotMatchResponse'
+     *               oneOf:
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Password reset link is invalid or has expired'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Old password is incorrect'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Please set a new password different from old password'
+     *                 - type: object
+     *                   properties:
+     *                     success:
+     *                       type: boolean
+     *                       example: false
+     *                     message:
+     *                       type: string
+     *                       example: 'Passwords do not match'
      */
     resetPassword = async (req: Request, res: Response, next: NextFunction) => {
         try {
