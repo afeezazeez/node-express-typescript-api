@@ -1,5 +1,8 @@
 import {CreateOptions,WhereOptions, DestroyOptions, FindOptions, Model, ModelStatic, UpdateOptions} from 'sequelize';
 import {IBaseRepository} from './interfaces/base.repository.interface';
+import configService from "../utils/config/config.service";
+import {PaginationOptions} from "../interfaces/request/pagination";
+
 
 export class BaseRepository<T extends Model<T>> implements IBaseRepository<T> {
     protected model: ModelStatic<T>;
@@ -15,9 +18,26 @@ export class BaseRepository<T extends Model<T>> implements IBaseRepository<T> {
             throw error;
         }
     }
-    async findAll(options?: FindOptions): Promise<T[]> {
+    async findAll(options: FindOptions = {}, paginationOptions?: PaginationOptions): Promise<{ rows: T[]; count: number }> {
+
         try {
-            return await this.model.findAll(options);
+            const { page= 1 , order= 'DESC',limit = 25 } = paginationOptions || {};
+
+            const offset = (page - 1) * limit;
+
+            const finalOptions: FindOptions = {
+                ...options,
+                limit,
+                offset,
+                order: [['created_at', order]],
+            };
+
+            const result = await this.model.findAndCountAll(finalOptions);
+
+            return {
+                rows: result.rows,
+                count: result.count,
+            };
         } catch (error) {
             throw error;
         }

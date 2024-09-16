@@ -38,7 +38,7 @@ const productController = new ProductController(productService);
 //router.post('', validateBody(LoginRequestDto), authController.login);
 //router.get('', validateBody(LoginRequestDto), authController.login);
 router.post('/categories',authMiddleware.authenticate,validateBody(ProductCategoryStoreDto), productController.storeCategory);
-//router.get('/categories',authMiddleware.authenticate, authController.getAuthUser);
+router.get('/categories',authMiddleware.authenticate, productController.getCategories);
 
 
 

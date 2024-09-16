@@ -22,7 +22,7 @@ class CategoryDto implements ICategory{
             return [];
         }
 
-        return categoryModels.map(categoryModel => CategoryDto.make(categoryModel) as ICategory);
+        return categoryModels.map(categoryModel => CategoryDto.make(categoryModel));
     }
 }
 

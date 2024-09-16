@@ -6,6 +6,8 @@ import {ProductRepository} from "../repositories/product.repository";
 import {ProductCategoryStoreDto} from "../dtos/product/product.category.store.dto";
 import CategoryDto from "../dtos/product/category.dto";
 import {ICategory} from "../interfaces/product/category.interface";
+import {PaginationOptions,PaginationMeta} from "../interfaces/request/pagination";
+import {generatePaginationMeta} from "../utils/helper";
 
 
 /**
@@ -49,6 +51,32 @@ export class ProductService {
             throw new ClientErrorException("Failed to create product");
         }
     }
+
+    /**
+     * fetch product categories
+     * @returns {ICategory[]}
+     * @throws {ClientErrorException}
+     */
+    async getCategories(findOptions:any,paginationOptions:PaginationOptions): Promise<{ data: ICategory[]; meta: PaginationMeta }> {
+        try {
+
+            const { page = 1, limit = 25 } = paginationOptions;
+
+            const { rows, count } = await this.categoryRepository.findAll(findOptions, paginationOptions);
+
+            const meta = generatePaginationMeta(count, page, limit);
+
+            return {
+                data: CategoryDto.collection(rows),
+                meta,
+            };
+        } catch (e) {
+            this.logger.error(`[ProductService] Failed to fetch product categories with error: ${e}`);
+            throw new ClientErrorException("Failed to fetch product");
+        }
+    }
+
+
 
 
 }
