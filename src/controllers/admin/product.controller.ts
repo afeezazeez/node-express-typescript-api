@@ -4,6 +4,10 @@ import {ProductCategoryStoreDto} from "../../dtos/product/product.category.store
 import {ProductService} from "../../services/product.service";
 import {extractPaginationAndSorting} from "../../utils/helper";
 import {FindOptions,Op} from "sequelize";
+import {ProductStoreDto} from "../../dtos/product/product.store.dto";
+import {ResponseStatus} from "../../enums/http-status-codes";
+import CategoryDto from "../../dtos/product/category.dto";
+import ProductDto from "../../dtos/product/product.dto";
 
 export class ProductController {
 
@@ -12,6 +16,63 @@ export class ProductController {
     constructor(productService: ProductService) {
         this.productService = productService;
     }
+
+
+
+    /**
+     * @swagger
+     * /api/admins/products:
+     *   post:
+     *     summary: Create product
+     *     tags: [Product]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/CreateProductDto'
+     *     responses:
+     *       200:
+     *         description: Product created successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/CreateProductSuccess'
+     *       400:
+     *         description: Bad request - Product name already exists
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Product name exists'
+     *       404:
+     *         description: Not found - Product category does not exist
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 success:
+     *                   type: boolean
+     *                   example: false
+     *                 message:
+     *                   type: string
+     *                   example: 'Product category does not exist'
+     */
+    storeProduct = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const product = await this.productService.storeProduct(req.body as ProductStoreDto);
+            return sendSuccessResponse(res, ProductDto.make(product), 'Product saved!');
+        } catch (e) {
+            next(e);
+        }
+    };
 
 
     /**
@@ -71,8 +132,8 @@ export class ProductController {
      */
     storeCategory = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const response = await this.productService.storeCategory(req.body as ProductCategoryStoreDto);
-            return sendSuccessResponse(res, response, 'Product saved!');
+            const category = await this.productService.storeCategory(req.body as ProductCategoryStoreDto);
+            return sendSuccessResponse(res, CategoryDto.make(category), 'Product category saved!',ResponseStatus.CREATED);
         } catch (e) {
             next(e);
         }
@@ -132,7 +193,7 @@ export class ProductController {
             }
             const paginationOptions = extractPaginationAndSorting(req)
             const categories = await this.productService.getCategories(findOptions,paginationOptions);
-            return sendSuccessResponse(res, categories);
+            return sendSuccessResponse(res, {data:CategoryDto.collection(categories.data),meta:categories.meta});
         } catch (e) {
             next(e);
         }

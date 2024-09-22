@@ -1,6 +1,5 @@
 import {CreateOptions,WhereOptions, DestroyOptions, FindOptions, Model, ModelStatic, UpdateOptions} from 'sequelize';
 import {IBaseRepository} from './interfaces/base.repository.interface';
-import configService from "../utils/config/config.service";
 import {PaginationOptions} from "../interfaces/request/pagination";
 
 
@@ -45,6 +44,16 @@ export class BaseRepository<T extends Model<T>> implements IBaseRepository<T> {
     async findById(id:number, options?: FindOptions): Promise<T | null> {
         try {
             return await this.model.findByPk(id, options);
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findByUuid(uuid: string, options?: FindOptions): Promise<T | null> {
+        try {
+            return await this.model.findOne({
+                where: { uuid },
+                ...options
+            });
         } catch (error) {
             throw error;
         }

@@ -14,6 +14,7 @@ import {ProductRepository} from "../../repositories/product.repository";
 import {CategoryRepository} from "../../repositories/category.repository";
 import {validateBody} from "../../middlewares/request-validator";
 import {ProductCategoryStoreDto} from "../../dtos/product/product.category.store.dto";
+import {ProductStoreDto} from "../../dtos/product/product.store.dto";
 
 
 const  router =  Router();
@@ -35,7 +36,7 @@ const productController = new ProductController(productService);
 
 
 
-//router.post('', validateBody(LoginRequestDto), authController.login);
+router.post('', authMiddleware.authenticate,validateBody(ProductStoreDto), productController.storeProduct);
 //router.get('', validateBody(LoginRequestDto), authController.login);
 router.post('/categories',authMiddleware.authenticate,validateBody(ProductCategoryStoreDto), productController.storeCategory);
 router.get('/categories',authMiddleware.authenticate, productController.getCategories);

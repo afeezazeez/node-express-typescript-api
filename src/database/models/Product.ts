@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import Category from "./Category";
 
 @Table({
@@ -17,12 +17,11 @@ export class Product extends Model<Product> {
     id!: number;
 
     @Column({
-        primaryKey:true,
+        primaryKey: true,
         type: DataType.UUIDV4,
         defaultValue: DataType.UUIDV4,
     })
     uuid!: string;
-
 
     @Column({
         type: DataType.STRING,
@@ -49,7 +48,6 @@ export class Product extends Model<Product> {
     })
     quantity!: number;
 
-
     @ForeignKey(() => Category)
     @Column({
         type: DataType.UUIDV4,
@@ -57,6 +55,8 @@ export class Product extends Model<Product> {
     })
     category_id!: string;
 
+    @BelongsTo(() => Category)
+    category!: Category;
 
     @Column({
         type: DataType.BOOLEAN,

@@ -4,10 +4,14 @@ import {ClientErrorException} from "../exceptions/client.error.exception";
 import {CategoryRepository} from "../repositories/category.repository";
 import {ProductRepository} from "../repositories/product.repository";
 import {ProductCategoryStoreDto} from "../dtos/product/product.category.store.dto";
-import CategoryDto from "../dtos/product/category.dto";
 import {ICategory} from "../interfaces/product/category.interface";
-import {PaginationOptions,PaginationMeta} from "../interfaces/request/pagination";
+import {PaginationMeta, PaginationOptions} from "../interfaces/request/pagination";
 import {generatePaginationMeta} from "../utils/helper";
+import {ProductStoreDto} from "../dtos/product/product.store.dto";
+import {IProduct} from "../interfaces/product/product.interface";
+import {ResponseStatus} from "../enums/http-status-codes";
+import Product from "../database/models/Product";
+import Category from "../database/models/Category";
 
 
 /**
@@ -30,13 +34,54 @@ export class ProductService {
     }
 
 
+
+    /**
+     * store product
+     * @param data {ProductStoreDto}
+     * @returns {Product}
+     * @throws {ClientErrorException}
+     */
+    async storeProduct(data: ProductStoreDto): Promise<Product|null> {
+
+        const category = await this.categoryRepository.findByUuid(data.category_uuid)
+
+        if (!category){
+            throw  new ClientErrorException("Product category does not exists",ResponseStatus.NOT_FOUND);
+        }
+
+        const isNameExist = await this.productRepository.findByName(data.name)
+
+        if (isNameExist){
+            throw  new ClientErrorException("Product name exists");
+        }
+
+        try {
+            const productData = {
+                ...data,
+                category_id: category.id
+            };
+
+            const product = await this.productRepository.create(productData);
+
+            return await this.productRepository.findById(product.id, {
+                include: [Category]
+            });
+
+        } catch (e) {
+            this.logger.error(`[ProductService] Failed to create product with error: ${e}`);
+            throw new ClientErrorException("Failed to create product");
+        }
+    }
+
+
+
     /**
      * store product category
      * @param data {ProductCategoryStoreDto}
-     * @returns {ICategory}
+     * @returns {Category}
      * @throws {ClientErrorException}
      */
-    async storeCategory(data: ProductCategoryStoreDto): Promise<ICategory> {
+    async storeCategory(data: ProductCategoryStoreDto): Promise<Category> {
         const isNameExist = await this.categoryRepository.findByName(data.name)
 
         if (isNameExist){
@@ -44,20 +89,19 @@ export class ProductService {
         }
 
         try {
-            const category = await this.categoryRepository.create(data)
-            return CategoryDto.make(category)
+            return  await this.categoryRepository.create(data)
         } catch (e) {
             this.logger.error(`[ProductService] Failed to create product category  with error: ${e}`);
-            throw new ClientErrorException("Failed to create product");
+            throw new ClientErrorException("Failed to create product category");
         }
     }
 
     /**
      * fetch product categories
-     * @returns {ICategory[]}
+     * @returns {data: Category[]; meta: PaginationMeta }
      * @throws {ClientErrorException}
      */
-    async getCategories(findOptions:any,paginationOptions:PaginationOptions): Promise<{ data: ICategory[]; meta: PaginationMeta }> {
+    async getCategories(findOptions:any,paginationOptions:PaginationOptions): Promise<{ data: Category[]; meta: PaginationMeta }> {
         try {
 
             const { page = 1, limit = 25 } = paginationOptions;
@@ -67,12 +111,12 @@ export class ProductService {
             const meta = generatePaginationMeta(count, page, limit);
 
             return {
-                data: CategoryDto.collection(rows),
+                data: rows,
                 meta,
             };
         } catch (e) {
             this.logger.error(`[ProductService] Failed to fetch product categories with error: ${e}`);
-            throw new ClientErrorException("Failed to fetch product");
+            throw new ClientErrorException("Failed to fetch product categories");
         }
     }
 
