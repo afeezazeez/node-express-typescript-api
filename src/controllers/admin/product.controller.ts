@@ -74,6 +74,66 @@ export class ProductController {
         }
     };
 
+    /**
+     * @swagger
+     * /api/admins/products:
+     *   get:
+     *     summary: Fetch product categories
+     *     tags: [Product]
+     *     parameters:
+     *       - in: query
+     *         name: name
+     *         schema:
+     *           type: string
+     *           example: 'Makintosh Big Sur'
+     *         description: The name of the product
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *           example: 1
+     *         description: The page number for pagination
+     *       - in: query
+     *         name: perPage
+     *         schema:
+     *           type: integer
+     *           example: 20
+     *         description: The number of items per page
+     *       - in: query
+     *         name: sortDirection
+     *         schema:
+     *           type: string
+     *           enum: [asc, desc]
+     *           example: 'asc'
+     *         description: The sorting direction (ascending or descending)
+     *     responses:
+     *       200:
+     *         description: Product categories fetched successfully
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/FetchProductSuccess'
+     */
+    getProducts = async (req: Request, res: Response, next: NextFunction) => {
+
+        try {
+            const name = req.query.name as string;
+            const findOptions:FindOptions = {};
+            if (name) {
+                findOptions.where = {
+                    name: {
+                        [Op.like]: `%${name}%`
+                    }
+                };
+            }
+            const paginationOptions = extractPaginationAndSorting(req)
+            const products = await this.productService.getProducts(findOptions,paginationOptions);
+            return sendSuccessResponse(res, {data:ProductDto.collection(products.data),meta:products.meta});
+        } catch (e) {
+            next(e);
+        }
+    };
+
 
     /**
      * @swagger

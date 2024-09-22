@@ -152,3 +152,96 @@ export const CreateProductSuccess = {
         },
     },
 };
+export const FetchProductSuccess = {
+    type: 'object',
+    properties: {
+        success: {
+            type: 'boolean',
+            description: 'Indicates whether the request was successful',
+            example: true,
+        },
+        data: {
+            type: 'object',
+            properties: {
+                data: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                                description: 'The name of the product',
+                                example: 'Makintosh 2024',
+                            },
+                            uuid: {
+                                type: 'string',
+                                description: 'The unique identifier for the product',
+                                example: '5239d838-0ad0-408d-bc44-3ca2fad6944a',
+                            },
+                            description: {
+                                type: 'string',
+                                description: 'A brief description of the product',
+                                example: 'Durable phone with long life',
+                            },
+                            price: {
+                                type: 'string',
+                                description: 'The price of the product',
+                                example: '2500.00',
+                            },
+                            category: {
+                                type: 'object',
+                                properties: {
+                                    name: {
+                                        type: 'string',
+                                        description: 'The name of the product category',
+                                        example: 'Laptops',
+                                    },
+                                    uuid: {
+                                        type: 'string',
+                                        description: 'The unique identifier for the category',
+                                        example: 'e73ff99d-298f-4b4f-b4a6-dfb7959f381f',
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                meta: {
+                    type: 'object',
+                    properties: {
+                        current_page: {
+                            type: 'integer',
+                            description: 'The current page number',
+                            example: 1,
+                        },
+                        next_page: {
+                            type: 'integer',
+                            description: 'The next page number, if available',
+                            example: 2,
+                        },
+                        previous_page: {
+                            type: 'integer',
+                            description: 'The previous page number, if available',
+                            example: null,
+                        },
+                        per_page: {
+                            type: 'integer',
+                            description: 'The number of items per page',
+                            example: 2,
+                        },
+                        total: {
+                            type: 'integer',
+                            description: 'The total number of items',
+                            example: 15,
+                        },
+                        last_page: {
+                            type: 'integer',
+                            description: 'The last page number',
+                            example: 8,
+                        },
+                    },
+                },
+            },
+        },
+    },
+};

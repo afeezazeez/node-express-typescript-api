@@ -38,7 +38,7 @@ export class ProductService {
     /**
      * store product
      * @param data {ProductStoreDto}
-     * @returns {Product}
+     * @returns {Product|null}
      * @throws {ClientErrorException}
      */
     async storeProduct(data: ProductStoreDto): Promise<Product|null> {
@@ -73,6 +73,34 @@ export class ProductService {
         }
     }
 
+    /**
+     * fetch product
+     * @returns {data: Product[]; meta: PaginationMeta }
+     * @throws {ClientErrorException}
+     */
+    async getProducts(findOptions:any,paginationOptions:PaginationOptions): Promise<{ data: Product[]; meta: PaginationMeta }> {
+        try {
+
+            const options = {
+                ...findOptions,
+                include: [Category]
+            };
+
+            const { page = 1, limit = 25 } = paginationOptions;
+
+            const { rows, count } = await this.productRepository.findAll(options, paginationOptions);
+
+            const meta = generatePaginationMeta(count, page, limit);
+
+            return {
+                data: rows,
+                meta,
+            };
+        } catch (e) {
+            this.logger.error(`[ProductService] Failed to fetch products with error: ${e}`);
+            throw new ClientErrorException("Failed to fetch products");
+        }
+    }
 
 
     /**

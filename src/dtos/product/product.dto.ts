@@ -10,7 +10,6 @@ class ProductDto implements IProduct {
     category: ICategory;
 
     constructor(productModel: any) {
-        console.log("AIIIIIIIIIIIIIIIIIII")
         this.name = productModel.name;
         this.uuid = productModel.uuid;
         this.description = productModel.description;
