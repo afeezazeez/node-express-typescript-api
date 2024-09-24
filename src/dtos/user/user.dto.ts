@@ -18,7 +18,7 @@ class UserDto implements IUser {
     static make(userModel: any): IUser {
         const userDto = new UserDto(userModel);
         return {
-           // id: userDto.id,
+            id: userDto.id,
             displayName: userDto.displayName,
             email: userDto.email,
             created_at: userDto.created_at,

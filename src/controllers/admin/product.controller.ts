@@ -17,14 +17,12 @@ export class ProductController {
         this.productService = productService;
     }
 
-
-
     /**
      * @swagger
      * /api/admins/products:
      *   post:
      *     summary: Create product
-     *     tags: [Product]
+     *     tags: [Admin Shop Management]
      *     requestBody:
      *       required: true
      *       content:
@@ -79,7 +77,7 @@ export class ProductController {
      * /api/admins/products:
      *   get:
      *     summary: Fetch product categories
-     *     tags: [Product]
+     *     tags: [Admin Shop Management]
      *     parameters:
      *       - in: query
      *         name: name
@@ -134,13 +132,12 @@ export class ProductController {
         }
     };
 
-
     /**
      * @swagger
      * /api/admins/products/categories:
      *   post:
      *     summary: Create product category
-     *     tags: [Product Category]
+     *     tags: [Admin Shop Management]
      *     requestBody:
      *       required: true
      *       content:
@@ -204,7 +201,7 @@ export class ProductController {
      * /api/admins/products/categories:
      *   get:
      *     summary: Fetch product categories
-     *     tags: [Product Category]
+     *     tags: [Admin Shop Management]
      *     parameters:
      *       - in: query
      *         name: name
