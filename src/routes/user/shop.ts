@@ -49,6 +49,7 @@ const shopController = new ShopController(productService,cartService,userService
 
 
 router.get('/products',authMiddleware.authenticate, shopController.getShopProducts);
+router.get('/products/:uuid',authMiddleware.authenticate, shopController.getShopProduct);
 router.post('/cart', authMiddleware.authenticate,validateBody(AddProductToCartDto), shopController.addProductToCart);
 
 

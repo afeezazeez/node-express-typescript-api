@@ -245,3 +245,53 @@ export const FetchProductSuccess = {
         },
     },
 };
+export const FetchSingleProductSuccess = {
+    type: 'object',
+    properties: {
+        success: {
+            type: 'boolean',
+            description: 'Indicates whether the request was successful',
+            example: true,
+        },
+        data: {
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'The name of the product',
+                    example: 'Makintosh 2024',
+                },
+                uuid: {
+                    type: 'string',
+                    description: 'The unique identifier for the product',
+                    example: '5239d838-0ad0-408d-bc44-3ca2fad6944a',
+                },
+                description: {
+                    type: 'string',
+                    description: 'A brief description of the product',
+                    example: 'Durable phone with long life',
+                },
+                price: {
+                    type: 'string',
+                    description: 'The price of the product',
+                    example: '2500.00',
+                },
+                category: {
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            description: 'The name of the product category',
+                            example: 'Laptops',
+                        },
+                        uuid: {
+                            type: 'string',
+                            description: 'The unique identifier for the category',
+                            example: 'e73ff99d-298f-4b4f-b4a6-dfb7959f381f',
+                        },
+                    },
+                },
+            },
+        },
+    },
+};

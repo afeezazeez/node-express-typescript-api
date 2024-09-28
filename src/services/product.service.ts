@@ -72,7 +72,7 @@ export class ProductService {
     }
 
     /**
-     * fetch product
+     * fetch products
      * @returns {data: Product[]; meta: PaginationMeta }
      * @throws {ClientErrorException}
      */
@@ -99,6 +99,22 @@ export class ProductService {
             throw new ClientErrorException("Failed to fetch products");
         }
     }
+
+    /**
+     * fetch product
+     * @returns {Product}
+     * @throws {ClientErrorException}
+     */
+    async getProduct(id:string): Promise<Product> {
+
+        const product =    await this.productRepository.findByUuid(id, {include: [Category]});
+
+        if (!product){
+            throw new ClientErrorException("Product not found",ResponseStatus.NOT_FOUND);
+        }
+        return product;
+    }
+
 
 
     /**
