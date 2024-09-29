@@ -11,7 +11,7 @@ import {Jobs} from "../enums/jobs.types";
 import {Tokens} from "../enums/tokens";
 import configService from "../utils/config/config.service";
 import {IUser} from "../interfaces/user/user.interface";
-import {generateHash} from "../utils/crypto-util/crypto";
+import {generateHash} from "../utils/helper";
 import {SendMailArgs} from "../interfaces/email/send.email";
 import {RedisService} from "../utils/redis/redis.service";
 import {VerifyEmailRequestDto} from "../dtos/auth/verify-email-request.dto";
