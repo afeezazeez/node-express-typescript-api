@@ -44,10 +44,25 @@ export class Order extends Model<Order> {
     user!: User;
 
     @Column({
-        type: DataType.STRING,
-        allowNull: false,
+        type: DataType.STRING,   // This specifies the data type
+        allowNull: false,        // This ensures the column cannot be null
+        defaultValue: 'Pending', // Default value for the column
     })
-    status!: string; // Pending, Shipped, Completed, etc.
+    status!: string; // Example status: Pending, Shipped,
+
+
+    @Column({
+        type: DataType.DECIMAL(10, 2), // Specifies the data type for total_amount
+        allowNull: false,               // Ensures the column cannot be null
+        defaultValue: 0.00,             // Default value for total_amount
+    })
+    total_amount!: number; // Total amount of the order
+
+    @Column({
+        type: DataType.STRING, // Specifies the data type for the reference column
+        allowNull: true,       // This column is nullable
+    })
+    reference?: string; // Reference for the order, can be nullable
 }
 
 export default Order;

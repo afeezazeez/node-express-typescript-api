@@ -102,17 +102,13 @@ export class ProductService {
 
     /**
      * fetch product
-     * @returns {Product}
+     * @returns {Product|null}
      * @throws {ClientErrorException}
      */
-    async getProduct(id:string): Promise<Product> {
+    async getProduct(id:string): Promise<Product|null> {
 
-        const product =    await this.productRepository.findByUuid(id, {include: [Category]});
+       return  await this.productRepository.findByUuid(id, {include: [Category]});
 
-        if (!product){
-            throw new ClientErrorException("Product not found",ResponseStatus.NOT_FOUND);
-        }
-        return product;
     }
 
 

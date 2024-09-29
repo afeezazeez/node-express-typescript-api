@@ -28,3 +28,9 @@ export function generatePaginationMeta(count: number, page: number, limit: numbe
         last_page: totalPages,
     };
 }
+
+export const generateOrderReference = (): string => {
+    const timestamp = Date.now().toString();
+    const randomNum = Math.floor(Math.random() * 10000); // Random number between 0-9999
+    return `ORD-${timestamp}-${randomNum}`; // Combine them for uniqueness
+};

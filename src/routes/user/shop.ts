@@ -16,6 +16,7 @@ import CartService from "../../services/cart.service";
 import {CartRepository} from "../../repositories/cart.repository";
 import {CartItemRepository} from "../../repositories/cartitem.repository";
 import {OrderRepository} from "../../repositories/order.repository";
+import {DeleteProductToCartDto} from "../../dtos/product/delete-cart-product.sto";
 
 
 const  router =  Router();
@@ -51,6 +52,9 @@ const shopController = new ShopController(productService,cartService,userService
 router.get('/products',authMiddleware.authenticate, shopController.getShopProducts);
 router.get('/products/:uuid',authMiddleware.authenticate, shopController.getShopProduct);
 router.post('/cart', authMiddleware.authenticate,validateBody(AddProductToCartDto), shopController.addProductToCart);
+router.get('/cart', authMiddleware.authenticate, shopController.getCart);
+router.delete('/cart', authMiddleware.authenticate,validateBody(DeleteProductToCartDto), shopController.removeProductFromCart);
+router.post('/cart/checkout', authMiddleware.authenticate,shopController.checkout);
 
 
 

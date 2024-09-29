@@ -295,3 +295,82 @@ export const FetchSingleProductSuccess = {
         },
     },
 };
+export const AddProductToCartSuccess = {
+    type: 'object',
+    properties: {
+        success: {
+            type: 'boolean',
+            description: 'Indicates whether the request was successful',
+            example: true,
+        },
+        message: {
+            type: 'string',
+            description: 'A message indicating the outcome of the operation',
+            example: 'Product added to cart',
+        },
+        data: {
+            type: 'object',
+            properties: {
+                product_uuid: {
+                    type: 'string',
+                    description: 'The UUID of the product',
+                    example: 'fd9e3d1b-64ed-4bf0-91d9-ffae4a5f1520',
+                },
+                product_name: {
+                    type: 'string',
+                    description: 'The name of the product',
+                    example: 'Iphone X',
+                },
+                quantity: {
+                    type: 'integer',
+                    description: 'The quantity of the product added to the cart',
+                    example: 5,
+                },
+            },
+        },
+    },
+};
+export const FetchCartSuccess = {
+    type: 'object',
+    properties: {
+        success: {
+            type: 'boolean',
+            example: true,
+        },
+        message: {
+            type: 'string',
+            example: 'Cart fetched successfully',
+        },
+        data: {
+            type: 'object',
+            properties: {
+                cartItems: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            product_uuid: {
+                                type: 'string',
+                                format: 'uuid',
+                                example: '7b10e73c-e19a-4279-bf3f-d220354924ae',
+                            },
+                            product_name: {
+                                type: 'string',
+                                example: 'Iphone 12 Pro',
+                            },
+                            quantity: {
+                                type: 'integer',
+                                example: 2,
+                            },
+                        },
+                    },
+                },
+                totalAmount: {
+                    type: 'integer',
+                    example: 13800,
+                },
+            },
+        },
+    },
+};
+
