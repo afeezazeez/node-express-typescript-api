@@ -20,9 +20,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
-// connect to database
-databaseService.authenticate();
-
 // apply rate limiting
 app.use(throttle);
 
