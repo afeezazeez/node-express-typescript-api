@@ -26,6 +26,10 @@ databaseService.authenticate();
 // apply rate limiting
 app.use(throttle);
 
+app.get('/user', (req, res) => {
+    res.json({ message: 'Hello, User!' });
+});
+
 
 app.use('/api', IndexRouter);
 
